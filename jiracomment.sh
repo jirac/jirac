@@ -4,8 +4,9 @@ echo "JIRA comment helper"
 
 echo "Checking prerequisites..."
 
-command -v git >/dev/null 2>&1 || { echo >&2 "Git is required but it's not installed.  Aborting."; exit 1;}
-command -v xclip >/dev/null 2>&1 || { echo >&2 "Xclip but it's not installed.  Aborting."; exit 1;}
+command -v git >/dev/null 2>&1 || { echo >&2 "Git is required but is not installed.  Aborting."; exit 1;}
+command -v xclip >/dev/null 2>&1 || { echo >&2 "Xclip is required but is not installed.  Aborting."; exit 1;}
+command -v mvn >/dev/null 2>&1 || { echo >&2 "Maven is required but is not installed.  Aborting."; exit 1;}
 
 if [ ! -f ~/.jiracomments ]; then
 	echo "Config file ~/.jiracomments is missing. Aborting."
