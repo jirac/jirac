@@ -41,10 +41,8 @@ until [ ! -z $(git branch | grep $branch) ]; do
 done
 
 # TODO: checkout branch
-# utiliser mnv pour choper la version
-# version : mvn help:evaluate -Dexpression=project.version -q ????? + grep pour virer les lignes de logs
+# version : mvn help:evaluate -Dexpression=project.version ????? + grep pour virer les lignes de logs
 
-echo $branch
 
 # commits (sha1)?
 
