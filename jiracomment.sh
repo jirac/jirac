@@ -1,58 +1,155 @@
 #!/bin/bash
 
-echo "JIRA comment helper"
+echo "
+       _ _____ _____              _          _                 _ 
+      | |_   _|  __ \     /\     | |        | |               | |
+      | | | | | |__) |   /  \    | |__   ___| |_ __   ___ _ __| |
+  _   | | | | |  _  /   / /\ \   | '_ \ / _ \ | '_ \ / _ \ '__| |
+ | |__| |_| |_| | \ \  / ____ \  | | | |  __/ | |_) |  __/ |  |_|
+  \____/|_____|_|  \_\/_/    \_\ |_| |_|\___|_| .__/ \___|_|  (_)
+                                              | |                
+                                              |_|                       
+"
 
-echo "Checking prerequisites..."
 
-command -v git >/dev/null 2>&1 || { echo >&2 "Git is required but is not installed.  Aborting."; exit 1;}
-command -v xclip >/dev/null 2>&1 || { echo >&2 "Xclip is required but is not installed.  Aborting."; exit 1;}
-command -v mvn >/dev/null 2>&1 || { echo >&2 "Maven is required but is not installed.  Aborting."; exit 1;}
+
+echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
+
+command -v git >/dev/null 2>&1 || { echo >&2 "[ERROR] Git is required but is not installed.  Aborting."; exit 1;}
+command -v xclip >/dev/null 2>&1 || { echo >&2 "[ERROR] Xclip is required but is not installed.  Aborting."; exit 1;}
+command -v mvn >/dev/null 2>&1 || { echo >&2 "[ERROR] Maven is required but is not installed.  Aborting."; exit 1;}
 
 if [ ! -f ~/.jiracomments ]; then
-	echo "Config file ~/.jiracomments is missing. Aborting."
+	echo "config file ~/.jiracomments is missing. Aborting."
 	exit 1
 fi 
 
 project_path=$(cat  ~/.jiracomments)
 if [ ! -d $project_path ]; then
-	echo "Invalid config file: $project_path is not a directory"
+	echo "invalid config file: $project_path is not a directory. Aborting."
 	exit 1
 fi
 
 
-echo "... OK!";
+echo " OK!"
+echo "[INFO] Project root directory: $project_path"
+echo 
 
-echo "Question time!"
+echo -e "# \033[7mQUESTION TIME!\033[m"
 
 # project folder
 
-until [ ! -z $project ] && [ -d "$project_path/$project" ]; do
-	echo "Which project (folder) ?"
+while [ -z "$project" ] || [ ! -d "$project_path/$project" ]; do
+	echo "## Which project folder? (ex: ezy-apps)"
+	echo -ne "\t"
 	read project
+	echo ""
 done
 
-# project name (default: project folder)
+
+# version
+
+echo -n "## Grabbing Maven artifact version... "
+
+project_pom="$project_path/$project/pom.xml"
+if [ -f "$project_pom" ]; then 
+	project_version=$(mvn help:evaluate -Dexpression=project.version -f $project_pom | grep '^[0-9].*')
+fi
+
+if [ -z "$project_version" ]; then
+	echo "no version found!"
+	echo "[ERROR] Either you don't follow a semantic versioning scheme or this is not a Maven project. Aborting."
+	exit 1
+else
+	echo " OK!"
+	echo "[INFO] version: $project_version"
+	echo ""
+fi
+
+
+# project hosted name (default: project folder)
+
+read -p "## Override default project hosted name (y/n)? (current value: $project) " -n 1 -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    while [ -z "$project_hosted_name" ]; do
+		echo ""
+		echo -ne "\t... which is? "
+		read project_hosted_name
+	done
+else
+	project_hosted_name=$project
+fi
+
 
 # branch
 
-until [ ! -z $(git branch | grep $branch) ]; do
-	echo "Which branch ?"
+project_git_location="$project_path/$project/.git";
+
+echo ""
+while [ -z "$branch" ] || [[ -z `git --git-dir=$project_git_location branch | grep "$branch"` ]]; do
+	echo -e "## Which \033[1mlocal\033[m Git branch? (ex: dev11)"
+	echo -ne "\t"
 	read branch
+	echo ""
 done
 
-# TODO: checkout branch
-# version : mvn help:evaluate -Dexpression=project.version ????? + grep pour virer les lignes de logs
+
+# commits
+
+while [ -z "$message" ] || [[ $REPLY =~ ^[Yy]$ ]]; do
+	echo -e "## Which commit \033[1mSHA1\033[m?"
+	echo -ne "\t"
+	read sha1
+	
+	if [ ! -z "$sha1" ]; then
+		message=$(git --git-dir=$project_git_location log --format=%B -n 1 $sha1 | head -n 1)
+
+		if [ ! -z "$message" ]; then
+			sha1s=("${sha1s[@]}" $sha1)
+			## FIXME: spaces are separators instead of newlines
+			messages=("${messages[@]}" $message)
+		fi
+	fi 
+
+	read -p "Other SHA1s (y/n)? " -n 1 -r
+	echo ""
+done
 
 
-# commits (sha1)?
 
-# pour chaque commit (au moins 1)
-#  - construire lien gitlab (project name + sha1)
-#  - récupérer message commit (description += newline + 1ere ligne du msg de commit)
-# continuer ? oui/non (y'a une cmd toute faite pour ça)
+# description override
 
-# override description (defaut: concatenation commits) : oui/non/pas de description
-# sinon skip
+default_description=$(printf -- '%s ' "${messages[@]}")
+read -p "## Override description (y/n/skip)? " -n 1 -r
+echo ""
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	while [ -z "$description" ]; do
+		echo -ne "\t... which is? "
+		read description
+	done
+elif [[ $REPLY =~ ^[sS]$ ]]; then
+	description=''
+else
+	description=$default_description
+fi
+
+echo ""
+echo -e "## \033[7mFINAL RESULT...\033[m"
+echo "
+h6. $project_hosted_name
+ * Branch: $branch
+ * Version: $project_version
+ * Commit(s)"
+
+for sha1 in $(printf -- '%s ' "${sha1s[@]}"); do
+	## TODO: check structure
+	echo " ** http://gitlab.fullsix.net/$project_hosted_name/commits/$branch/$sha1"
+done
+
+if [ ! -z description ]; then
+	echo " * Description: $description"
+fi
+
 
 # interpolation template
 
@@ -69,4 +166,3 @@ done
 #**   gitlab_link_2
 #**   ...
 #* description (si y'en a une): ... 
-
