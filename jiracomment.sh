@@ -121,18 +121,20 @@ done
 
 # commits
 
-while [ -z "$message" ] || [[ $REPLY =~ ^[Yy]$ ]]; do
+while [ -z "$message" ] || [[ $REPLY =~ ^[Yy]$ ]]
+do
 	echo -e "## Which commit \033[1mSHA1\033[m?"
 	echo -ne "\t"
 	read sha1
 	
-	if [ -n "$sha1" ]; then
+	if [ -n "$sha1" ]
+    then
 		message=$(git --git-dir=$project_git_location log --format=%B $sha1 | head -n 1)
 
 		if [ -n "$message" ]; then
-			sha1s=("${sha1s[@]}" $sha1)
+			sha1s+=" "$sha1
 			## FIXME: spaces are separators instead of newlines
-			messages=("${messages[@]}" $message)
+			messages+="\n"$message
 		fi
 	fi 
 
@@ -144,15 +146,17 @@ done
 
 # description override
 
-default_description=$(printf -- '%s ' "${messages[@]}")
+default_description=$messages
 read -p "## Override description (y/n/skip)? " -n 1 -r
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-	while [ -z "$description" ]; do
+	while [ -z "$description" ]
+    do
 		echo -ne "\t... which is? "
 		read description
 	done
-elif [[ $REPLY =~ ^[sS]$ ]]; then
+elif [[ $REPLY =~ ^[sS]$ ]]
+then
 	description=''
 else
 	description=$default_description
@@ -166,12 +170,14 @@ h6. $project_hosted_name
  * Version: $project_version
  * Commit(s)"
 
-for sha1 in $(printf -- '%s ' "${sha1s[@]}"); do
+for sha1 in $sha1s
+do
 	## TODO: check structure
 	echo " ** http://gitlab.fullsix.net/$project_hosted_name/commits/$branch/$sha1"
 done
 
-if [ ! -z description ]; then
+if [ -n description ]
+then
 	echo " * Description: $description"
 fi
 
