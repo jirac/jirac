@@ -38,21 +38,43 @@ echo
 echo -e "# \033[7mQUESTION TIME!\033[m"
 
 # project folder
-
-while [ -z "$project" ] || [ ! -d "$project_path/$project" ]; do
-	echo "## Which project folder? (ex: ezy-apps)"
-	echo -ne "\t"
-	read project
-	echo ""
+echo "Which project folder ?"
+echo $project_path
+PS3="Project ? --> "
+select project in $(ls $project_path)
+do
+    if [[ -n $project ]]
+    then
+        break
+    else
+        echo "Invalid choice"
+    fi
 done
+        
 
+project_pom="$project_path/$project/pom.xml"
+project_git_location="$project_path/$project/.git"
+
+# Some basic verification. Fail early principe
+if [ ! -f  $project_pom ]
+then
+	echo "[ERROR] No POM file found in the project directory. Aborting."
+    exit 1
+fi
+
+if [ ! -d $project_git_location ]
+then 
+    echo "[ERROR] The provided directory is not a git repository. Aborting."
+    exit 1
+
+fi
 
 # version
 
 echo -n "## Grabbing Maven artifact version... "
 
-project_pom="$project_path/$project/pom.xml"
-if [ -f "$project_pom" ]; then 
+if [ -f "$project_pom" ]
+then 
 	project_version=$(mvn help:evaluate -Dexpression=project.version -f $project_pom | grep '^[0-9].*')
 fi
 
@@ -75,6 +97,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 		echo ""
 		echo -ne "\t... which is? "
 		read project_hosted_name
+        echo ""
 	done
 else
 	project_hosted_name=$project
@@ -82,16 +105,27 @@ fi
 
 
 # branch
-
-project_git_location="$project_path/$project/.git";
-
-echo ""
-while [ -z "$branch" ] || [[ -z `git --git-dir=$project_git_location branch | grep "$branch"` ]]; do
-	echo -e "## Which \033[1mlocal\033[m Git branch? (ex: dev11)"
-	echo -ne "\t"
-	read branch
-	echo ""
+echo "Which branch concern the modification ?"
+echo $project_git_location
+PS3="Branch ? --> "
+select branch in $(git --git-dir=$project_git_location branch)
+do
+    if [[ -n $branch ]]  
+        then
+        # FIX-ME: Bad names displayed
+        break
+    else
+        echo "Invalid choice."
+    fi
 done
+ 
+echo ""
+#while [ -z "$branch" ] || [[ -z `git --git-dir=$project_git_location branch | grep "$branch"` ]]; do
+#	echo -e "## Which \033[1mlocal\033[m Git branch? (ex: dev11)"
+#	echo -ne "\t"
+#	read branch
+#	echo ""
+#done
 
 
 # commits
