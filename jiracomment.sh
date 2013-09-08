@@ -127,7 +127,7 @@ while [ -z "$message" ] || [[ $REPLY =~ ^[Yy]$ ]]; do
 	read sha1
 	
 	if [ -n "$sha1" ]; then
-		message=$(git --git-dir=$project_git_location log --format=%B -n 1 $sha1 | head -n 1)
+		message=$(git --git-dir=$project_git_location log --format=%B $sha1 | head -n 1)
 
 		if [ -n "$message" ]; then
 			sha1s=("${sha1s[@]}" $sha1)
