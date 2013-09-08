@@ -172,8 +172,10 @@ h6. $project_hosted_name
 
 for sha1 in $sha1s
 do
+    ## Warning, this line is valid only if the provided SHA is in the current branch FIXME
+    complete_sha1=$(git --git-dir=$project_git_location log --format=raw | grep $sha1 | cut -d " " -f2)
 	## TODO: check structure
-	echo " ** http://gitlab.fullsix.net/$project_hosted_name/commits/$branch/$sha1"
+	echo " ** http://gitlab.fullsix.net/$project_hosted_name/commits/$branch/$complete_sha1"
 done
 
 if [ -n description ]
