@@ -112,7 +112,7 @@ select branch in $(git --git-dir=$project_git_location branch)
 do
     if [[ -n $branch ]]  
         then
-        # FIX-ME: Bad names displayed
+        # FIXME: Bad names displayed
         break
     else
         echo "Invalid choice."
@@ -133,7 +133,7 @@ do
 
 		if [ -n "$message" ]; then
 			sha1s+=" "$sha1
-			## FIXME: spaces are separators instead of newlines
+			## FIXME: echo print \n instead of printing newline 
 			messages+="\n"$message
 		fi
 	fi 
