@@ -118,15 +118,6 @@ do
         echo "Invalid choice."
     fi
 done
- 
-echo ""
-#while [ -z "$branch" ] || [[ -z `git --git-dir=$project_git_location branch | grep "$branch"` ]]; do
-#	echo -e "## Which \033[1mlocal\033[m Git branch? (ex: dev11)"
-#	echo -ne "\t"
-#	read branch
-#	echo ""
-#done
-
 
 # commits
 
@@ -135,10 +126,10 @@ while [ -z "$message" ] || [[ $REPLY =~ ^[Yy]$ ]]; do
 	echo -ne "\t"
 	read sha1
 	
-	if [ ! -z "$sha1" ]; then
+	if [ -n "$sha1" ]; then
 		message=$(git --git-dir=$project_git_location log --format=%B -n 1 $sha1 | head -n 1)
 
-		if [ ! -z "$message" ]; then
+		if [ -n "$message" ]; then
 			sha1s=("${sha1s[@]}" $sha1)
 			## FIXME: spaces are separators instead of newlines
 			messages=("${messages[@]}" $message)
