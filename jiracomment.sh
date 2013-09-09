@@ -2,7 +2,7 @@
 
 
 checkDependency(){
-command -v $1 >/dev/null 2>&1 || { echo >&2 "[ERROR] "$1" is required but is not installed.  Aborting."; exit 1;}
+command -v $1 >/dev/null 2>&1 || { echo >&2 "[ERROR] ${1} is required but is not installed.  Aborting."; exit 1;}
 }
 
 echo "
