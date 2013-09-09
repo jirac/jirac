@@ -5,6 +5,19 @@ checkDependency(){
 command -v $1 >/dev/null 2>&1 || { echo >&2 "[ERROR] ${1} is required but is not installed.  Aborting."; exit 1;}
 }
 
+selectStatement(){
+local PS3="${1} ? --> "
+select answer in $($2)
+do
+    if [[ -n $answer ]]
+    then
+        break
+    else
+        echo "Invalid choice"
+    fi
+done
+}
+
 echo "
        _ _____ _____              _          _                 _ 
       | |_   _|  __ \     /\     | |        | |               | |
@@ -16,7 +29,8 @@ echo "
                                               |_|                       
 "
 
-
+msg=$(cat template.md | grep h6)
+echo $msg
 
 echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
 for dependency in git xclip mvn
@@ -45,6 +59,10 @@ echo -e "# \033[7mQUESTION TIME!\033[m"
 # project folder
 echo "Which project folder ?"
 echo $project_path
+
+# FIXME: Cannot pass the result of the command ls...
+#selectStatement Project ls $project_path
+
 PS3="Project ? --> "
 select project in $(ls $project_path)
 do
@@ -55,7 +73,6 @@ do
         echo "Invalid choice"
     fi
 done
-        
 
 project_pom="$project_path/$project/pom.xml"
 project_git_location="$project_path/$project/.git"
