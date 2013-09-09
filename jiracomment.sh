@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+checkDependency(){
+command -v $1 >/dev/null 2>&1 || { echo >&2 "[ERROR] "$1" is required but is not installed.  Aborting."; exit 1;}
+}
+
 echo "
        _ _____ _____              _          _                 _ 
       | |_   _|  __ \     /\     | |        | |               | |
@@ -14,10 +19,10 @@ echo "
 
 
 echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
-
-command -v git >/dev/null 2>&1 || { echo >&2 "[ERROR] Git is required but is not installed.  Aborting."; exit 1;}
-command -v xclip >/dev/null 2>&1 || { echo >&2 "[ERROR] Xclip is required but is not installed.  Aborting."; exit 1;}
-command -v mvn >/dev/null 2>&1 || { echo >&2 "[ERROR] Maven is required but is not installed.  Aborting."; exit 1;}
+for dependency in git xclip mvn
+do
+    checkDependency $dependency
+done
 
 if [ ! -f ~/.jiracomments ]; then
 	echo "config file ~/.jiracomments is missing. Aborting."
