@@ -7,10 +7,12 @@ command -v $1 >/dev/null 2>&1 || { echo >&2 "[ERROR] ${1} is required but is not
 
 selectStatement(){
 local PS3="${1} ? --> "
+cd $3
 select answer in $($2)
 do
     if [[ -n $answer ]]
     then
+        cd -
         break
     else
         echo "Invalid choice"
@@ -29,6 +31,7 @@ echo "
                                               |_|                       
 "
 
+export project_hosted_name="fjdslfjdsl"
 msg=$(cat template.md | grep h6)
 echo $msg
 
@@ -57,25 +60,12 @@ echo
 echo -e "# \033[7mQUESTION TIME!\033[m"
 
 # project folder
-echo "Which project folder ?"
-echo $project_path
-
-# FIXME: Cannot pass the result of the command ls...
-#selectStatement Project ls $project_path
-
-PS3="Project ? --> "
-select project in $(ls $project_path)
-do
-    if [[ -n $project ]]
-    then
-        break
-    else
-        echo "Invalid choice"
-    fi
-done
-
+echo "Which maven project ?"
+selectStatement Project ls $project_path
+project=$answer
 project_pom="$project_path/$project/pom.xml"
 project_git_location="$project_path/$project/.git"
+
 
 # Some basic verification. Fail early principe
 if [ ! -f  $project_pom ]
@@ -129,17 +119,8 @@ fi
 # branch
 echo "Which branch concern the modification ?"
 echo $project_git_location
-PS3="Branch ? --> "
-select branch in $(git --git-dir=$project_git_location branch)
-do
-    if [[ -n $branch ]]  
-        then
-        # FIXME: Bad names displayed
-        break
-    else
-        echo "Invalid choice."
-    fi
-done
+selectStatement Branch "git branch" $project_git_location
+branch=$answer
 
 # commits
 
