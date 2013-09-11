@@ -31,9 +31,6 @@ echo "
                                               |_|                       
 "
 
-export project_hosted_name="fjdslfjdsl"
-msg=$(cat template.md | grep h6)
-echo $msg
 
 echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
 for dependency in git xclip mvn
@@ -123,27 +120,39 @@ selectStatement Branch "git branch" $project_git_location
 branch=$answer
 
 # commits
-
-while [ -z "$message" ] || [[ $REPLY =~ ^[Yy]$ ]]
+author=$(git config user.name)
+echo -e "## Which commit \033[1mSHA1\033[m?"
+while [ ! -s /tmp/log_commit ] || [[ $REPLY =~ ^[Yy]$ ]]
 do
-	echo -e "## Which commit \033[1mSHA1\033[m?"
-	echo -ne "\t"
-	read sha1
-	
-	if [ -n "$sha1" ]
-    then
-		message=$(git --git-dir=$project_git_location log --format=%B $sha1 | head -n 1)
-
-		if [ -n "$message" ]; then
-			sha1s+=" "$sha1
-			## FIXME: echo print \n instead of printing newline 
-			messages+="\n"$message
-		fi
-	fi 
-
-	read -p "Other SHA1s (y/n)? " -n 1 -r
+    echo 'git --git-dir=${project_git_location} log -10 --author=${author} --format="%h %s"'
+    `git --git-dir=${project_git_location} log -10 --author=$author --format="%h %s"` > /tmp/log_commit
+    $EDITOR /tmp/log_commits
+    sha1=$(grep '^x ' /tmp/log_commits)
+    echo $sha1
+	read -p "Do you want to add more commits(y/n)? " -n 1 -r
 	echo ""
 done
+
+
+#while [ -z "$message" ] || [[ $REPLY =~ ^[Yy]$ ]]
+#do
+#	echo -e "## Which commit \033[1mSHA1\033[m?"
+##	echo -ne "\t"
+#	read sha1
+#	
+#	if [ -n "$sha1" ]
+#    then
+#		message=$(git --git-dir=$project_git_location log --format=%B $sha1 | head -n 1)
+#		if [ -n "$message" ]; then
+#			sha1s+=" "$sha1
+#			## FIXME: echo print \n instead of printing newline 
+#			messages+="\n"$message
+#		fi
+#	fi 
+#
+#	read -p "Other SHA1s (y/n)? " -n 1 -r
+#	echo ""
+#done
 
 
 
@@ -183,7 +192,7 @@ done
 
 if [ -n description ]
 then
-	echo " * Description: $description"
+	echo -e " * Description: $description"
 fi
 
 
