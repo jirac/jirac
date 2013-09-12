@@ -168,19 +168,4 @@ fi
     
 xclip -sel clip < $temp_clip
 
-
-# interpolation template
-
-# xclip du template interpolé (voir ci-dessous)
-# commande : xclip -sel clip < my_template
-
-# exemple template (fichier à part)
-# h6. git_project_name
-#
-# * Branch: xx
-# * Version: x.y.z
-# * Commit(s):
-#**   gitlab_link_1
-#**   gitlab_link_2
-#**   ...
-#* description (si y'en a une): ... 
+echo "Stored in clipboard. Paste, paste, paste \o/"
