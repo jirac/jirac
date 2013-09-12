@@ -111,24 +111,26 @@ author=$(git config user.name)
 echo -e "## Which commit \033[1mSHA1s\033[m?"
 
 while [[ -z ${short_hash} || $REPLY =~ ^[Yy]$ ]]; do
-    echo "# Select a commit by prepending 'x ' (without quotes)" > /tmp/log_commits
-    git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' >> /tmp/log_commits
-    $EDITOR /tmp/log_commits
+    temp_file=$(mktemp)
+    echo "# Select a commit by prepending 'x ' (without quotes)" > $temp_file
+    git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' >> $temp_file
+    $EDITOR $temp_file
     messages="$(grep '^x ' /tmp/log_commits)"
     for msg in "$messages"; do
 	    short_hash+=$(echo $msg | cut -d " " -f2)
     done
-    echo "$short_hash"
+    echo $short_hash
+
+    echo $(echo ${default_description} | cut -d " " -f2-)
     read -p "Redo commit picking (y/n)? " -n 1 -r
     echo ""
 done
 
-
+temp_clip=$(mktemp)
 
 # description override
 
 default_description=$messages
-echo "${default_description}" | cut -d " " -f3-
 read -p "## Override description (y/n/skip)? " -n 1 -r
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -150,18 +152,21 @@ echo "
 h6. $project_hosted_name
  * Branch: $branch
  * Version: $project_version
- * Commit(s)"
+ * Commit(s)" >> $temp_clip
 short_hashes=$(echo "${default_description}" | cut -d " " -f2) > /dev/null 2>&1 
 for hash in $short_hashes; do
     complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
-	echo " ** http://gitlab.fullsix.net/$project_hosted_name/commit/$branch/$complete_sha1"
+	echo " ** http://gitlab.fullsix.net/$project_hosted_name/commit/$branch/$complete_sha1" >> $temp_clip
 done
 
 if [ -n description ]
 then
 	echo -e " * Description:"
-echo "${default_description}" | cut -d " " -f2-
+echo "${default_description}" | cut -d " " -f2- >> $temp_clip
 fi
+
+    
+xclip -sel clip < $temp_clip
 
 
 # interpolation template
