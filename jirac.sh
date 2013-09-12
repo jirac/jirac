@@ -149,7 +149,7 @@ fi
 echo ""
 echo -e "## \033[7mFINAL RESULT...\033[m"
 echo "
-h6. $project_hosted_name
+*$project_hosted_name*
  * Branch: $branch
  * Version: $project_version
  * Commit(s)" >> $temp_clip
