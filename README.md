@@ -9,9 +9,9 @@ It will put the comment contents in your clipboard.
 
  1. git clone ... ;)
  1. cd /path/to/clone
- 1. ./jirac.sh
+ 1. ./jirac
 
-If you want to use `jirac.sh` from anywhere, make sure to 
+If you want to use `jirac` from anywhere, make sure to 
 export `/path/to/clone` into your PATH (`~/.bashrc`, `~/.zshrc`...).
 
 Once launched, just answer a few questions.

@@ -1,0 +1,199 @@
+#!/bin/bash
+
+
+source core_functions.sh
+source ui_functions.sh
+
+echo "
+       _ _____ _____              _          _                 _ 
+      | |_   _|  __ \     /\     | |        | |               | |
+      | | | | | |__) |   /  \    | |__   ___| |_ __   ___ _ __| |
+  _   | | | | |  _  /   / /\ \   | '_ \ / _ \ | '_ \ / _ \ '__| |
+ | |__| |_| |_| | \ \  / ____ \  | | | |  __/ | |_) |  __/ |  |_|
+  \____/|_____|_|  \_\/_/    \_\ |_| |_|\___|_| .__/ \___|_|  (_)
+                                              | |                
+                                              |_|                       
+"
+
+
+echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
+for dependency in git xclip mvn sed; do
+	jirac_check_dependency $dependency
+done
+
+echo " OK!"
+echo 
+
+echo -e "# \033[7mQUESTION TIME!\033[m"
+
+# project folder
+
+echo "Which Maven project?"
+
+root_dir=$(jirac_get_git_project_root_directory)
+
+if [ -d $root_dir ]; then
+	project_path=$root_dir
+	project_pom="$root_dir/pom.xml"
+	project_git_location="$root_dir/.git"
+	branch=$(jirac_get_git_current_branch)
+
+	jirac_log INFO "Already in a MVN/Git project, you lucky guy!"
+else
+	if [ ! -f ~/.jiracomments ]; then
+		jirac_log ERROR "config file ~/.jiracomments is missing. Aborting."
+		exit 1
+	fi 
+
+	project_path=$(cat  ~/.jiracomments)
+	if [ ! -d $project_path ]; then
+		jirac_log ERROR "invalid config file: $project_path is not a directory. Aborting."
+		exit 1
+	fi
+
+	jirac_select Project ls $project_path
+	project_pom="$project_path/$answer/pom.xml"
+	project_git_location="$project_path/$answer/.git"
+fi
+
+# sanity checks
+
+if [ ! -f  $project_pom ]; then
+	jirac_log ERROR "No POM file found in the project directory. Aborting."
+    	exit 1
+fi
+
+if [ ! -d $project_git_location ]; then 
+    	jirac_log ERROR "The provided directory is not a git repository. Aborting."
+    	exit 1
+
+fi
+
+jirac_log INFO "Project root directory: $project_path"
+echo
+
+# version
+
+echo "## Grabbing Maven name, artifact version and SCM URL... "
+
+project=$(jirac_get_maven_project_name $project_pom)
+project_version=$(jirac_get_maven_version $project_pom)
+gitlab_base_url=$(jirac_get_scm_url $project_pom)
+
+if [ -z "$project_version" ]; then
+	echo "no version found!"
+	jirac_log ERROR "Either you don't follow a semantic versioning scheme or this is not a Maven project. Aborting."
+	exit 1
+elif [ -z "$project" ]; then
+	echo "no project name found!"
+	jirac_log ERROR "Please check <name> is present in your POM"
+	exit 1
+
+elif [ -z "$gitlab_base_url" ]; then
+	echo "no SCM URL found!"
+	jirac_log ERROR "Please make a section <scm><connection> is present in your POM"
+	exit 1
+else
+	echo " OK!"
+	jirac_log INFO "version: $project_version"
+	echo ""
+fi
+
+
+# branch
+
+if [ -z $branch ]; then
+	echo "On which branch are the modifications?"
+	echo $project_git_location
+	jirac_select Branch "git branch" $project_git_location
+	branch=$answer
+fi
+
+# commits
+
+author=$(git config user.name)
+echo -e "## Which commit \033[1mSHA1s\033[m?"
+
+while [[ -z ${short_hash} || $REPLY =~ ^[Yy]$ ]]; do
+    temp_file=$(mktemp)
+
+    echo "# Select a commit by prepending 'x ' (without quotes)" > $temp_file
+    git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' >> $temp_file
+
+    $EDITOR $temp_file
+    messages="$(grep '^x ' $temp_file)"
+    for msg in "$messages"; do
+	    short_hash+=$(echo $msg | cut -d " " -f2)
+    done
+
+    echo $(echo ${default_description} | cut -d " " -f2-)
+    read -p "Redo commit picking (y/n)? " -n 1 -r
+    echo ""
+done
+
+
+# description override
+
+default_description=$messages
+read -p "## Override description (y/n/skip)? " -n 1 -r
+echo ""
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	while [ -z "$description" ]; do
+		echo -ne "\t... which is? "
+		read description
+	done
+elif [[ $REPLY =~ ^[sS]$ ]]; then
+	description=''
+else
+	description=$(echo ${default_description} | cut -d " " -f2)
+fi
+
+echo ""
+echo -e "## \033[7mFINAL RESULT...\033[m"
+
+
+temp_clip=$(mktemp)
+
+
+#TODO: real clean template
+echo "
+*$project*
+ * Branch: $branch
+ * Version: $project_version
+ * Commit(s)" >> $temp_clip
+short_hashes=$(echo "${default_description}" | cut -d " " -f2) > /dev/null 2>&1 
+for hash in $short_hashes; do
+    	complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
+	echo " ** $gitlab_base_url/commit/$branch/$complete_sha1" >> $temp_clip
+done
+
+if [ -n description ]
+then
+	echo -e " * Description:" >> $temp_clip
+	echo "${default_description}" | cut -d " " -f2- >> $temp_clip
+fi
+
+    
+xclip -sel clip < $temp_clip
+
+echo '
++88_________________+880_______
+_+880_______________++80_______
+_++88______________+880________
+_++88_____________++88________
+__+880___________++88_________
+__+888_________++880__________
+__++880_______++880___________
+__++888_____+++880____________
+__++8888__+++8880++88_________
+__+++8888+++8880++8888________
+___++888++8888+++888888+80____
+___++88++8888++8888888++888___
+___++++++888888fx88888888888___
+____++++++88888888888888888___
+____++++++++000888888888888___
+_____+++++++00008f8888888888___
+______+++++++00088888888888___
+_______+++++++0888f8888888
+'
+echo "Paste it now \o/"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-selectStatement() {
+jirac_select() {
 	local PS3="${1} ? --> "
 	cd $3
 	select answer in $($2)
