@@ -32,7 +32,7 @@ echo "Which Maven project?"
 
 root_dir=$(jirac_get_git_project_root_directory)
 
-if [ -d $root_dir ]; then
+if [[ -d $root_dir && -f "${root_dir}/pom.xml" ]]; then
 	project_path=$root_dir
 	project_pom="$root_dir/pom.xml"
 	project_git_location="$root_dir/.git"
