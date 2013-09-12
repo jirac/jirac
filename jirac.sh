@@ -66,35 +66,25 @@ fi
 
 # version
 
-echo -n "## Grabbing Maven artifact version... "
+echo -n "## Grabbing Maven artifact version and SCM URL... "
 
 if [ -f "$project_pom" ]; then 
 	project_version=$(mvn help:evaluate -Dexpression=project.version -f $project_pom | grep '^[0-9].*')
+	gitlab_base_url=$(mvn help:evaluate -Dexpression=project.scm.connection -f $project_pom | grep '^scm' | cut -d':' -f3- | sed -s 's/\.git//')
 fi
 
 if [ -z "$project_version" ]; then
 	echo "no version found!"
 	log ERROR "Either you don't follow a semantic versioning scheme or this is not a Maven project. Aborting."
 	exit 1
+elif [ -z "$gitlab_base_url" ]; then
+	echo "no SCM URL found!"
+	log ERROR "Please make a section <scm><connection> is present in your POM"
+	exit 1
 else
 	echo " OK!"
 	log INFO "version: $project_version"
 	echo ""
-fi
-
-
-# project hosted name (default: project folder)
-
-read -p "## Override default project hosted name (y/n)? (current value: $project) " -n 1 -r
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    while [ -z "$project_hosted_name" ]; do
-	echo ""
-	echo -ne "\t... which is? "
-	read project_hosted_name
-        echo ""
-	done
-else
-	project_hosted_name=$project
 fi
 
 
@@ -149,14 +139,14 @@ fi
 echo ""
 echo -e "## \033[7mFINAL RESULT...\033[m"
 echo "
-*$project_hosted_name*
+*$project*
  * Branch: $branch
  * Version: $project_version
  * Commit(s)" >> $temp_clip
 short_hashes=$(echo "${default_description}" | cut -d " " -f2) > /dev/null 2>&1 
 for hash in $short_hashes; do
     complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
-	echo " ** http://gitlab.fullsix.net/$project_hosted_name/commit/$branch/$complete_sha1" >> $temp_clip
+	echo " ** $gitlab_base_url/commit/$branch/$complete_sha1" >> $temp_clip
 done
 
 if [ -n description ]
