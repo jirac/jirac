@@ -115,7 +115,7 @@ while [[ -z ${short_hash} || $REPLY =~ ^[Yy]$ ]]; do
     echo "# Select a commit by prepending 'x ' (without quotes)" > $temp_file
     git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' >> $temp_file
     $EDITOR $temp_file
-    messages="$(grep '^x ' /tmp/log_commits)"
+    messages="$(grep '^x ' $temp_file)"
     for msg in "$messages"; do
 	    short_hash+=$(echo $msg | cut -d " " -f2)
     done
@@ -161,8 +161,8 @@ done
 
 if [ -n description ]
 then
-	echo -e " * Description:"
-echo "${default_description}" | cut -d " " -f2- >> $temp_clip
+	echo -e " * Description:" >> $temp_clip
+	echo "${default_description}" | cut -d " " -f2- >> $temp_clip
 fi
 
     
