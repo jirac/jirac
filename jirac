@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 source core_functions.sh
 source ui_functions.sh
 
@@ -36,7 +35,7 @@ if [[ -d $root_dir && -f "${root_dir}/pom.xml" ]]; then
 	project_path=$root_dir
 	project_pom="$root_dir/pom.xml"
 	project_git_location="$root_dir/.git"
-	branch=$(jirac_get_git_current_branch)
+	branch=$(jirac_get_git_current_remote_branch)
 
 	jirac_log INFO "Already in a MVN/Git project, you lucky guy!"
 else
@@ -66,7 +65,6 @@ fi
 if [ ! -d $project_git_location ]; then 
     	jirac_log ERROR "The provided directory is not a git repository. Aborting."
     	exit 1
-
 fi
 
 jirac_log INFO "Project root directory: $project_path"
@@ -101,16 +99,13 @@ fi
 
 
 # branch
-
-if [ -z $branch ]; then
-	echo "On which branch are the modifications?"
-	echo $project_git_location
-	jirac_select Branch "git branch" $project_git_location
-	branch=$answer
-fi
+while [ -z "$branch" ]; do
+    jirac_log INFO "Your branch has no upstream set, please choose another one:"
+    jirac_select Branch "git branch -r" $project_git_location
+    branch=$answer
+done
 
 # commits
-
 author=$(git config user.name)
 echo -e "## Which commit \033[1mSHA1s\033[m?"
 
@@ -118,7 +113,7 @@ while [[ -z ${short_hash} || $REPLY =~ ^[Yy]$ ]]; do
     temp_file=$(mktemp)
 
     echo "# Select a commit by prepending 'x ' (without quotes)" > $temp_file
-    git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' >> $temp_file
+    git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' $branch >> $temp_file
 
     $EDITOR $temp_file
     messages="$(grep '^x ' $temp_file)"
