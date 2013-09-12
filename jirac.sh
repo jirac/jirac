@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-source ./core_functions.sh
-source ./ui_functions.sh
+source core_functions.sh
+source ui_functions.sh
 
 echo "
        _ _____ _____              _          _                 _ 
