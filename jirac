@@ -164,7 +164,7 @@ echo "
 short_hashes=$(echo "${default_description}" | cut -d " " -f2) > /dev/null 2>&1 
 for hash in $short_hashes; do
     	complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
-	echo " ** $gitlab_base_url/commit/$branch/$complete_sha1" >> $temp_clip
+	echo " ** $gitlab_base_url/commit/$complete_sha1" >> $temp_clip
 done
 
 if [ -n description ]
