@@ -19,6 +19,14 @@ echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
 for dependency in git xclip mvn sed xmlstarlet; do
 	jirac_check_dependency $dependency
 done
+echo
+echo
+
+echo -ne "# \033[7mCONFIGURATION CHECK...\033[m "
+if [ -z $EDITOR ]; then
+	jirac_log ERROR 'Please export $EDITOR as your favourite text editor'
+	exit 1
+fi
 
 echo " OK!"
 echo 
