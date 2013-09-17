@@ -23,7 +23,7 @@ echo
 echo
 
 echo -ne "# \033[7mCONFIGURATION CHECK...\033[m "
-if [ -z $EDITOR ]; then
+if [ -z "$EDITOR" ]; then
 	jirac_log ERROR 'Please export $EDITOR as your favourite text editor'
 	exit 1
 fi
