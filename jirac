@@ -16,7 +16,7 @@ echo "
 
 
 echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
-for dependency in git xclip mvn sed; do
+for dependency in git xclip mvn sed xmlstarlet; do
 	jirac_check_dependency $dependency
 done
 
