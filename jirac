@@ -90,6 +90,7 @@ if [ -z "$project_version" ]; then
 	echo "no version found!"
 	jirac_log ERROR "Either you don't follow a semantic versioning scheme or this is not a Maven project. Aborting."
 	exit 1
+
 elif [ -z "$project" ]; then
 	echo "no project name found!"
 	jirac_log ERROR "Please check <name> is present in your POM"
@@ -102,6 +103,8 @@ elif [ -z "$gitlab_base_url" ]; then
 else
 	echo " OK!"
 	jirac_log INFO "version: $project_version"
+	jirac_log INFO "SCM URL: $gitlab_base_url"
+	jirac_log INFO "name: $project"
 	echo ""
 fi
 
