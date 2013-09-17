@@ -7,20 +7,15 @@ It will put the comment contents in your clipboard.
 
 ## Setup
 
+ 1. cd /path/to/projects
  1. git clone ... ;)
- 1. cd /path/to/clone
- 1. ./jirac
+ 1. $EDITOR ~/.bashrc # or ~/.zshrc
+ 1. export /path/to/projects/jirac in $PATH
 
-If you want to use `jirac` from anywhere, make sure to 
-export `/path/to/clone` into your PATH (`~/.bashrc`, `~/.zshrc`...).
-
+You can now use `jirac` from anywhere.
 Once launched, just answer a few questions.
 
-## How jirac allows you to choose commits
-
-TL;DR: `jirac` allows you to comment only pushed commit.
-
-Why?
+## Why `jirac` only shows pushed commits
 
 If some other new commits were pushed while you were working, you would have to pull those changes before pushing.
 The problem occurs when rebase is enabled by default. What will happen then?
