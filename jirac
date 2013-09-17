@@ -120,7 +120,7 @@ done
 author=$(git config user.name)
 echo -e "## Which commit \033[1mSHA1s\033[m?"
 
-while [[ -z ${short_hash} || $REPLY =~ ^[Yy]$ ]]; do
+while [[ -z ${short_hash} ]]; do
     temp_file=$(mktemp)
 
     echo "# Select a commit by prepending 'x ' (without quotes)" > $temp_file
@@ -133,8 +133,6 @@ while [[ -z ${short_hash} || $REPLY =~ ^[Yy]$ ]]; do
     done
 
     echo $(echo ${default_description} | cut -d " " -f2-)
-    read -p "Redo commit picking (y/n)? " -n 1 -r
-    echo ""
 done
 
 
