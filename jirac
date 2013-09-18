@@ -132,13 +132,17 @@ while [[ -z ${short_hash} ]]; do
 	    short_hash+=$(echo $msg | cut -d " " -f2)
     done
 
-    echo $(echo ${default_description} | cut -d " " -f2-)
 done
 
 
 # description override
 
-default_description=$messages
+short_hashes=$(echo "${messages}" | cut -d " " -f2)
+for sha in $short_hashes; do
+	msg=$(jirac_get_git_full_message $project_git_location $sha)"\n"
+	default_description="${default_description}$msg"
+done
+
 read -p "## Override description (y/n/skip)? " -n 1 -r
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -149,7 +153,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 elif [[ $REPLY =~ ^[sS]$ ]]; then
 	description=''
 else
-	description=$(echo "${default_description}" | cut -d " " -f2-)
+	description=$default_description
 fi
 
 echo ""
@@ -165,25 +169,23 @@ echo "
 * branche   : $branch
 * version   : $project_version
 * commit(s) :" >> $temp_clip
-short_hashes=$(echo "${default_description}" | cut -d " " -f2) > /dev/null 2>&1 
 for hash in $short_hashes; do
     	complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
 	echo "** $gitlab_base_url/commit/$complete_sha1" >> $temp_clip
 done
 
-if [ -n description ]
-then
+if [ -n "${description}" ]; then
 	echo -e "* Description:" >> $temp_clip
-	echo "${description}" >> $temp_clip
+	echo -e "${description}" >> $temp_clip
 fi
 
     
 xclip -sel clip < $temp_clip
 
 echo '
-+88_________________+880_______
-_+880_______________++80_______
-_++88______________+880________
++88_________________+880______
+_+880_______________++80______
+_++88______________+880_______
 _++88_____________++88________
 __+880___________++88_________
 __+888_________++880__________
@@ -193,11 +195,11 @@ __++8888__+++8880++88_________
 __+++8888+++8880++8888________
 ___++888++8888+++888888+80____
 ___++88++8888++8888888++888___
-___++++++888888fx88888888888___
+___++++++888888fx88888888888__
 ____++++++88888888888888888___
 ____++++++++000888888888888___
-_____+++++++00008f8888888888___
+_____+++++++00008f8888888888__
 ______+++++++00088888888888___
-_______+++++++0888f8888888
+_______+++++++0888f8888888____
 '
 echo "Paste it now \o/"

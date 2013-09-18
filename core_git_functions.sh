@@ -10,3 +10,7 @@ jirac_get_git_current_remote_branch() {
 	local branch=$(git rev-parse --symbolic --abbrev-ref $(git symbolic-ref HEAD))
     	echo $(git for-each-ref --format='%(refname:short):%(upstream:short)' refs/heads | grep "$branch:" | cut -d: -f2)
 }
+
+jirac_get_git_full_message() {
+	echo -e $(git --git-dir="$1" log --format=%B -n1 $2)
+}
