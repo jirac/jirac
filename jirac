@@ -149,7 +149,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 elif [[ $REPLY =~ ^[sS]$ ]]; then
 	description=''
 else
-	description=$(echo ${default_description} | cut -d " " -f2)
+	description=$(echo "${default_description}" | cut -d " " -f2-)
 fi
 
 echo ""
@@ -174,7 +174,7 @@ done
 if [ -n description ]
 then
 	echo -e "* Description:" >> $temp_clip
-	echo "${default_description}" | cut -d " " -f2- >> $temp_clip
+	echo "${description}" >> $temp_clip
 fi
 
     
