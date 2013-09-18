@@ -162,18 +162,18 @@ temp_clip=$(mktemp)
 #TODO: real clean template
 echo "
 *$project*
- * Branch: $branch
- * Version: $project_version
- * Commit(s)" >> $temp_clip
+* branche   : $branch
+* version   : $project_version
+* commit(s) :" >> $temp_clip
 short_hashes=$(echo "${default_description}" | cut -d " " -f2) > /dev/null 2>&1 
 for hash in $short_hashes; do
     	complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
-	echo " ** $gitlab_base_url/commit/$complete_sha1" >> $temp_clip
+	echo "** $gitlab_base_url/commit/$complete_sha1" >> $temp_clip
 done
 
 if [ -n description ]
 then
-	echo -e " * Description:" >> $temp_clip
+	echo -e "* Description:" >> $temp_clip
 	echo "${default_description}" | cut -d " " -f2- >> $temp_clip
 fi
 
