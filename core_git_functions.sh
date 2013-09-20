@@ -12,5 +12,5 @@ jirac_get_git_current_remote_branch() {
 }
 
 jirac_get_git_full_message() {
-	echo -e $(git --git-dir="$1" log --format=%B -n1 $2)
+	echo -e "$(git --git-dir="$1" log --format=%B -n1 $2)"
 }
