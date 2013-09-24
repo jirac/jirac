@@ -134,7 +134,7 @@ done
 author=$(git config user.name)
 
 if [ -n "$number_of_commit" ];then
-    messages=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --author="${author}" --format='%h %s')
+    messages=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --author="${author}" --format='%h %s' $branch)
 else
     echo -e "## Which commit \033[1mSHA1s\033[m?"
     while [ -z ${messages} ]; do
