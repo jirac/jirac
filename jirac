@@ -3,17 +3,31 @@
 source core_functions.sh
 source ui_functions.sh
 
-echo "
-       _ _____ _____              _          _                 _ 
-      | |_   _|  __ \     /\     | |        | |               | |
-      | | | | | |__) |   /  \    | |__   ___| |_ __   ___ _ __| |
-  _   | | | | |  _  /   / /\ \   | '_ \ / _ \ | '_ \ / _ \ '__| |
- | |__| |_| |_| | \ \  / ____ \  | | | |  __/ | |_) |  __/ |  |_|
-  \____/|_____|_|  \_\/_/    \_\ |_| |_|\___|_| .__/ \___|_|  (_)
-                                              | |                
-                                              |_|                       
-"
 
+jirac_banner_print
+
+# FIXME: Export this snippet in a method. Not successful now
+while getopts ":n:" opt; do
+    case $opt in
+        n)
+            if [ $OPTARG -gt 0 ]; then
+                echo "and it's positive"
+                number_of_commit=$OPTARG
+            else
+                jirac_help
+                exit 1
+            fi
+            ;;
+        \?)
+            jirac_help
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            exit 1
+            ;;
+    esac
+done
 
 echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
 for dependency in git xclip mvn sed xmlstarlet; do
@@ -118,26 +132,25 @@ done
 
 # commits
 author=$(git config user.name)
-echo -e "## Which commit \033[1mSHA1s\033[m?"
 
-while [[ -z ${short_hash} ]]; do
-    temp_file=$(mktemp)
+if [ -n "$number_of_commit" ];then
+    messages=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --author="${author}" --format='%h %s')
+else
+    echo -e "## Which commit \033[1mSHA1s\033[m?"
+    while [ -z ${messages} ]; do
+        temp_file=$(mktemp)
 
-    echo "# Select a commit by prepending 'x ' (without quotes)" > $temp_file
-    git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' $branch >> $temp_file
-
-    $EDITOR $temp_file
-    messages="$(grep '^x ' $temp_file)"
-    for msg in "$messages"; do
-	    short_hash+=$(echo $msg | cut -d " " -f2)
+        echo "# Select a commit by prepending 'x ' (without quotes)" > $temp_file
+        git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' $branch >> $temp_file
+        $EDITOR $temp_file
+        messages="$(grep '^x ' $temp_file)"
     done
-
-done
-
+    messages=$(echo "$messages" | sed -e "s/^x //g")
+fi
 
 # description override
 
-short_hashes=$(echo "${messages}" | cut -d " " -f2)
+short_hashes=$(echo "${messages}" | cut -d " " -f1)
 for sha in $short_hashes; do
 	msg=$(jirac_get_git_full_message $project_git_location $sha)"\n"
 	default_description="${default_description}$msg"
@@ -162,7 +175,6 @@ echo -e "## \033[7mFINAL RESULT...\033[m"
 
 temp_clip=$(mktemp)
 
-
 #TODO: real clean template
 echo "
 *$project*
@@ -179,27 +191,6 @@ if [ -n "${description}" ]; then
 	echo -e "${description}" >> $temp_clip
 fi
 
-    
 xclip -sel clip < $temp_clip
 
-echo '
-+88_________________+880______
-_+880_______________++80______
-_++88______________+880_______
-_++88_____________++88________
-__+880___________++88_________
-__+888_________++880__________
-__++880_______++880___________
-__++888_____+++880____________
-__++8888__+++8880++88_________
-__+++8888+++8880++8888________
-___++888++8888+++888888+80____
-___++88++8888++8888888++888___
-___++++++888888fx88888888888__
-____++++++88888888888888888___
-____++++++++000888888888888___
-_____+++++++00008f8888888888__
-______+++++++00088888888888___
-_______+++++++0888f8888888____
-'
-echo "Paste it now \o/"
+jirac_victorious_print
