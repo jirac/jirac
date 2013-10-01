@@ -30,9 +30,16 @@ while getopts ":n:" opt; do
 done
 
 echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
-for dependency in git xclip mvn sed xmlstarlet; do
+for dependency in git mvn sed xmlstarlet; do
 	jirac_check_dependency $dependency
 done
+
+if [[ $OSTYPE == darwin* ]]; then
+        jirac_check_dependency pbcopy
+else
+        jirac_check_dependency xclip
+fi
+
 echo
 echo
 
@@ -137,8 +144,8 @@ if [ -n "$number_of_commit" ];then
     messages=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --author="${author}" --format='%h %s' $branch)
 else
     echo -e "## Which commit \033[1mSHA1s\033[m?"
-    while [ -z ${messages} ]; do
-        temp_file=$(mktemp)
+    while [ -z "$messages" ]; do
+        temp_file=$(jirac_mktemp)
 
         echo "# Select a commit by prepending 'x ' (without quotes)" > $temp_file
         git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' $branch >> $temp_file
@@ -173,7 +180,7 @@ echo ""
 echo -e "## \033[7mFINAL RESULT...\033[m"
 
 
-temp_clip=$(mktemp)
+temp_clip=$(jirac_mktemp)
 
 #TODO: real clean template
 echo "
@@ -191,6 +198,7 @@ if [ -n "${description}" ]; then
 	echo -e "${description}" >> $temp_clip
 fi
 
-xclip -sel clip < $temp_clip
+jirac_copy_to_clipboard $temp_clip
+# xclip -sel clip < $temp_clip
 
 jirac_victorious_print
