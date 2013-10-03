@@ -36,6 +36,8 @@ done
 
 if [[ $OSTYPE == darwin* ]]; then
         jirac_check_dependency pbcopy
+elif [[ $OSTYPE == msys ]]; then
+        jirac_check_dependency clip
 else
         jirac_check_dependency xclip
 fi
@@ -199,6 +201,5 @@ if [ -n "${description}" ]; then
 fi
 
 jirac_copy_to_clipboard $temp_clip
-# xclip -sel clip < $temp_clip
 
 jirac_victorious_print
