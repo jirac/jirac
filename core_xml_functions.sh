@@ -4,7 +4,7 @@ xml_parser() {
 	if [[ $OSTYPE == msys ]]; then
 		echo "xml"
 	else
-		echo "xmlstartlet"
+		echo "xmlstarlet"
 	fi
 }
 
