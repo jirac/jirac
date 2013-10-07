@@ -30,17 +30,19 @@ while getopts ":n:" opt; do
 done
 
 echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
-for dependency in git mvn sed xmlstarlet; do
-	jirac_check_dependency $dependency
-done
 
 if [[ $OSTYPE == darwin* ]]; then
         jirac_check_dependency pbcopy
 elif [[ $OSTYPE == msys ]]; then
         jirac_check_dependency clip
+        jirac_check_dependency mktemp
 else
         jirac_check_dependency xclip
 fi
+
+for dependency in git sed `xml_parser`; do
+	jirac_check_dependency $dependency
+done
 
 echo
 echo
@@ -88,12 +90,12 @@ fi
 
 # sanity checks
 
-if [ ! -f  $project_pom ]; then
+if [ ! -f  "$project_pom" ]; then
 	jirac_log ERROR "No POM file found in the project directory. Aborting."
     	exit 1
 fi
 
-if [ ! -d $project_git_location ]; then 
+if [ ! -d "$project_git_location" ]; then 
     	jirac_log ERROR "The provided directory is not a git repository. Aborting."
     	exit 1
 fi
@@ -105,9 +107,9 @@ echo
 
 echo "## Grabbing Maven name, artifact version and SCM URL... "
 
-project=$(jirac_get_maven_project_name $project_pom)
-project_version=$(jirac_get_maven_version $project_pom)
-gitlab_base_url=$(jirac_get_scm_url $project_pom)
+project=$(jirac_get_maven_project_name "$project_pom")
+project_version=$(jirac_get_maven_version "$project_pom")
+gitlab_base_url=$(jirac_get_scm_url "$project_pom")
 
 if [ -z "$project_version" ]; then
 	echo "no version found!"
@@ -149,7 +151,7 @@ else
     while [ -z "$messages" ]; do
         temp_file=$(jirac_mktemp)
 
-        echo "# Select a commit by prepending 'x ' (without quotes)" > $temp_file
+        echo "# Select a commit by prepending 'x ' (without quotes)" > "$temp_file"
         git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' $branch >> $temp_file
         $EDITOR $temp_file
         messages="$(grep '^x ' $temp_file)"
@@ -161,18 +163,18 @@ fi
 
 short_hashes=$(echo "${messages}" | cut -d " " -f1)
 for sha in $short_hashes; do
-	msg=$(jirac_get_git_full_message $project_git_location $sha)"\n"
+	msg=$(jirac_get_git_full_message "$project_git_location" $sha)"\n"
 	default_description="${default_description}$msg"
 done
 
 read -p "## Override description (y/n/skip)? " -n 1 -r
 echo ""
-if [[ $REPLY =~ ^[Yy]$ ]]; then
+if [[ $REPLY == "Y" || $REPLY == "y" ]]; then
 	while [ -z "$description" ]; do
 		echo -ne "\t... which is? "
 		read description
 	done
-elif [[ $REPLY =~ ^[sS]$ ]]; then
+elif [[ $REPLY == "S" || $REPLY == "s" ]]; then
 	description=''
 else
 	description=$default_description
@@ -189,15 +191,15 @@ echo "
 *$project*
 * branche   : $branch
 * version   : $project_version
-* commit(s) :" >> $temp_clip
+* commit(s) :" > "$temp_clip"
 for hash in $short_hashes; do
     	complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
-	echo "** $gitlab_base_url/commit/$complete_sha1" >> $temp_clip
+	echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
 done
 
 if [ -n "${description}" ]; then
-	echo -e "* Description:" >> $temp_clip
-	echo -e "${description}" >> $temp_clip
+	echo -e "* Description:" >> "$temp_clip"
+	echo -e "${description}" >> "$temp_clip"
 fi
 
 jirac_copy_to_clipboard $temp_clip
