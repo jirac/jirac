@@ -27,7 +27,7 @@ Make sure to install
 
 Make sure to install:
 
- * [`mktemp`](http://gnuwin32.sourceforge.net/packages/mktemp.htm) and include its `bin` folder in `PATH`
+ * [mktemp](http://gnuwin32.sourceforge.net/packages/mktemp.htm) and include its `bin` folder in `PATH`
 
 ### Mac users
 
