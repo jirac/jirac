@@ -1,9 +1,7 @@
 #!/bin/bash
 
 jirac_get_git_project_root_directory() {
-	if [ -d .git ]; then
-	echo $(git rev-parse --show-toplevel)
-	fi
+	echo $(git rev-parse --show-toplevel 2>&1 | grep -v "^fatal")
 }
 
 jirac_get_git_current_remote_branch() {
