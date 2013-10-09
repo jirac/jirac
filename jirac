@@ -203,7 +203,7 @@ done
 
 if [ -n "${description}" ]; then
 	echo -e "* Description:" >> "$temp_clip"
-	echo -e "${description}" >> "$temp_clip"
+	echo -e "${description}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
 fi
 
 jirac_copy_to_clipboard $temp_clip
