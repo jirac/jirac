@@ -1,7 +1,9 @@
 #!/bin/bash
+shopt -u sourcepath
+jirac_dir=$(dirname $0)
 
-source core_functions.sh
-source ui_functions.sh
+source "$jirac_dir"/core_functions.sh
+source "$jirac_dir"/ui_functions.sh
 
 
 jirac_banner_print

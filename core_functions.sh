@@ -1,8 +1,8 @@
 #!/bin/bash
 
-source core_git_functions.sh
-source core_xml_functions.sh
-source core_io_functions.sh
+source "$jirac_dir"/core_git_functions.sh
+source "$jirac_dir"/core_xml_functions.sh
+source "$jirac_dir"/core_io_functions.sh
 
 jirac_check_dependency() {
 	command -v $1 >/dev/null 2>&1 || { echo >&2 log ERROR "${1} is required but is not installed.  Aborting."; exit 1;}
