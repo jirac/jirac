@@ -159,9 +159,9 @@ else
         temp_file=$(jirac_mktemp)
 
         echo "# Select a commit by prepending 'x ' (without quotes)" > "$temp_file"
-        git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' $branch >> $temp_file
-        eval "$editor" $temp_file
-        short_hashes="$(awk '/^x / { print $2 }' $temp_file)"
+        git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' $branch >> "$temp_file"
+        eval "$editor" "$temp_file"
+        short_hashes="$(awk '/^x / { print $2 }' "$temp_file")"
     done
 fi
 
@@ -206,6 +206,6 @@ if [ -n "${description}" ]; then
 	echo -e "${description}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
 fi
 
-jirac_copy_to_clipboard $temp_clip
+jirac_copy_to_clipboard "$temp_clip"
 
 jirac_victorious_print
