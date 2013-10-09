@@ -153,7 +153,7 @@ else
 
         echo "# Select a commit by prepending 'x ' (without quotes)" > "$temp_file"
         git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' $branch >> $temp_file
-        $EDITOR $temp_file
+        "$EDITOR" $temp_file
         messages="$(grep '^x ' $temp_file)"
     done
     messages=$(echo "$messages" | sed -e "s/^x //g")
