@@ -15,7 +15,7 @@ Make to sure to:
  1. install Git (with Git Bash on Windows) 
  1. install XMLStarlet with this [link](http://xmlstar.sourceforge.net/download.php) or via your package manager
  1. clone this repo ;) and include the clone directory in `PATH`
- 1. define environment variable `EDITOR` (e.g.: "vim")
+ 1. define environment variable `VISUAL` or `EDITOR` (e.g.: "vim")
 
 ### Linux users
 
