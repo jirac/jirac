@@ -1,6 +1,6 @@
 #!/bin/bash
 shopt -u sourcepath
-jirac_dir=$(dirname $0)
+jirac_dir=$(dirname "$0")
 
 source "$jirac_dir"/core_functions.sh
 source "$jirac_dir"/ui_functions.sh
@@ -52,6 +52,9 @@ echo
 echo -ne "# \033[7mCONFIGURATION CHECK...\033[m "
 editor=$VISUAL
 editor=${editor:-$EDITOR}
+editor=$(echo "$editor" | sed 's/\\/\//g')
+editor=$(echo "$editor" | sed 's/ /\\ /g')
+
 if [ -z "$editor" ]; then
 	jirac_log ERROR 'Please export $VISUAL or $EDITOR as your favourite text editor'
 	exit 1
