@@ -50,15 +50,9 @@ echo
 echo
 
 echo -ne "# \033[7mCONFIGURATION CHECK...\033[m "
-editor=$VISUAL
-editor=${editor:-$EDITOR}
-editor=${editor//\\/\/}
-editor=${editor// /\\ }
 
-if [ -z "$editor" ]; then
-	jirac_log ERROR 'Please export $VISUAL or $EDITOR as your favourite text editor'
-	exit 1
-fi
+
+create_editor_variable
 
 echo " OK!"
 echo 
@@ -157,7 +151,7 @@ else
     echo -e "## Which commit \033[1mSHA1s\033[m?"
     while [ -z "$short_hashes" ]; do
         temp_file=$(jirac_mktemp)
-
+        
         echo "# Select a commit by prepending 'x ' (without quotes)" > "$temp_file"
         git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' $branch >> "$temp_file"
         eval "$editor" "$temp_file"
