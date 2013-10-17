@@ -8,6 +8,16 @@ Automate JIRA comment creation.
 
 It will insert the comment contents right into your clipboard.
 
+## Downloads
+
+### Stable version
+
+Here you go: https://gitlab.fullsix.com/sfr-sandbox/jira-comment/repository/archive?ref=v1.0.
+
+### Latest
+
+git clone ;-)
+
 ## Common setup
 
 Make to sure to:
