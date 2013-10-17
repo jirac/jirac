@@ -42,6 +42,9 @@ If you plan to export a graphical editor (such as gedit, Sublime Text etc), you 
 
 Obviously regardless of the editor you use, **escape spaces in its path before exporting it**!
 
+## Manual
+
+See [this](../blob/master/MANUAL.md) doc.
 
 ## Execution
 
@@ -63,21 +66,11 @@ Therefore, the early-generated commits' URLs are likely to be wrong as it will i
 
 To remain on the safe side, `jirac` therefore enforces *pushed* commit selection.
 
-## Options
-When using jirac, the most common use case is to comment the last commit.
-For this reason, jirac give the option to specify the number of _last_ commits you want to comment.
-The below example include the last commit:
-
-`jirac -n1`
-
-More generally: `jirac -n i` will comment the i last commits.
-
-
 ## Troubleshooting
 
 :fearful:
 
-Ping `@fbiville`/`@Ismael` on Flowdock :thumbsup:
+Ping `@Ismael`/`@Glip` on Flowdock :thumbsup:
 
 Create a [Gitlab issue](https://gitlab.fullsix.com/sfr-sandbox/jira-comment/issues) if needed with as much as details as you can.
 
