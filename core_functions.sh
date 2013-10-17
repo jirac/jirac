@@ -31,8 +31,6 @@ jirac_copy_to_clipboard() {
 create_editor_variable(){
     editor=$VISUAL
     editor=${editor:-$EDITOR}
-    editor=${editor//\\/\/}
-    editor=${editor// /\\ }
 
     if [ -z "$editor" ]; then
         jirac_log ERROR 'Please export $VISUAL or $EDITOR as your favourite text editor'

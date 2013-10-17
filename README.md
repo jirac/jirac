@@ -36,6 +36,13 @@ Make sure to install:
  * `pbcopy`
 
 
+### Quick note on editor export
+
+If you plan to export a graphical editor (such as gedit, Sublime Text etc), you should already know you _HAVE TO_ specify specific options ("-w -s" for gedit, "-n -w" for Sublime) in the editor export so that it _BLOCKS_ the calling script.
+
+Obviously regardless of the editor you use, escape spaces in its path before exporting it!
+
+
 ## Execution
 
 You can now use `jirac` from anywhere or from a specific Git/MVN project.
