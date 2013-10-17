@@ -38,9 +38,9 @@ Make sure to install:
 
 ### Quick note on editor export
 
-If you plan to export a graphical editor (such as gedit, Sublime Text etc), you should already know you _HAVE TO_ specify specific options ("-w -s" for gedit, "-n -w" for Sublime) in the editor export so that it _BLOCKS_ the calling script.
+If you plan to export a graphical editor (such as gedit, Sublime Text etc), you should already know you **HAVE TO** specify specific options ("-w -s" for gedit, "-n -w" for Sublime) in the editor export so that it **BLOCKS** the calling script.
 
-Obviously regardless of the editor you use, *escape spaces in its path before exporting it*!
+Obviously regardless of the editor you use, **escape spaces in its path before exporting it**!
 
 
 ## Execution
@@ -65,6 +65,10 @@ To remain on the safe side, `jirac` therefore enforces *pushed* commit selection
 
 ## Troubleshooting
 
-Ping `@fbiville`/`@Ismael` on Flowdock.
+:fearful:
+
+Ping `@fbiville`/`@Ismael` on Flowdock :thumbsup:
 
 Create a [Gitlab issue](https://gitlab.fullsix.com/sfr-sandbox/jira-comment/issues) if needed with as much as details as you can.
+
+
