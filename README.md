@@ -63,6 +63,16 @@ Therefore, the early-generated commits' URLs are likely to be wrong as it will i
 
 To remain on the safe side, `jirac` therefore enforces *pushed* commit selection.
 
+## Options
+When using jirac, the most common use case is to comment the last commit.
+For this reason, jirac give the option to specify the number of _last_ commits you want to comment.
+The below example include the last commit:
+
+`jirac -n1`
+
+More generally: `jirac -n i` will comment the i last commits.
+
+
 ## Troubleshooting
 
 :fearful:
