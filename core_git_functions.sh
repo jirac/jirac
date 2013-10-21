@@ -14,9 +14,9 @@ jirac_get_git_full_message() {
 }
 
 jirac_list_git_commit() {
-    echo  -e "$(git --git-dir="$1" log -10 --author="$2" --format='%h %s' $3)"
+    echo  -e "$(git --git-dir="$1" log -10 --author="$2" --committer="$2" --format='%h %s' $3)"
 }
 
 jirac_keep_git_commit(){
-    echo -e "$(git --git-dir="$1" log -"$2" --author="$3" --format=%h $4)"
+    echo -e "$(git --git-dir="$1" log -"$2" --author="$3" --committer="$2" --format=%h $4)"
 }
