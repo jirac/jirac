@@ -146,14 +146,14 @@ done
 author=$(git config user.name)
 
 if [ -n "$number_of_commit" ];then
-    short_hashes=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --author="${author}" --format=%h $branch)
+    short_hashes=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --author="${author}" --committer="${author}" --format=%h $branch)
 else
     echo -e "## Which commit \033[1mSHA1s\033[m?"
     while [ -z "$short_hashes" ]; do
         temp_file=$(jirac_mktemp)
         
         echo "# Select a commit by prepending 'x ' (without quotes)" > "$temp_file"
-        git --git-dir="${project_git_location}" log -10 --author="${author}" --format='%h %s' $branch >> "$temp_file"
+        git --git-dir="${project_git_location}" log -10 --author="${author}" --committer="${author}" --format='%h %s' $branch >> "$temp_file"
         eval "$editor" "$temp_file"
         short_hashes="$(awk '/^x / { print $2 }' "$temp_file")"
     done
