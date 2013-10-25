@@ -61,8 +61,6 @@ echo -e "# \033[7mQUESTION TIME!\033[m"
 
 # project folder
 
-echo "Which Maven project?"
-
 root_dir=$(jirac_get_git_project_root_directory)
 
 if [[ -d $root_dir && -f "${root_dir}/pom.xml" ]]; then
@@ -70,23 +68,8 @@ if [[ -d $root_dir && -f "${root_dir}/pom.xml" ]]; then
 	project_pom="$root_dir/pom.xml"
 	project_git_location="$root_dir/.git"
 	branch=$(jirac_get_git_current_remote_branch)
-
-	jirac_log INFO "Already in a MVN/Git project, you lucky guy!"
 else
-	if [ ! -f ~/.jiracomments ]; then
-		jirac_log ERROR "config file ~/.jiracomments is missing. Aborting."
-		exit 1
-	fi 
-
-	project_path=$(cat  ~/.jiracomments)
-	if [ ! -d $project_path ]; then
-		jirac_log ERROR "invalid config file: $project_path is not a directory. Aborting."
-		exit 1
-	fi
-
-	jirac_select Project ls $project_path
-	project_pom="$project_path/$answer/pom.xml"
-	project_git_location="$project_path/$answer/.git"
+    jirac_log INFO "To run jirac please move inside your maven project on which you want to comment a commit."
 fi
 
 # sanity checks
