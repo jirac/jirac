@@ -58,11 +58,8 @@ See [this](../blob/master/MANUAL.md) doc.
 
 ## Execution
 
-You can now use `jirac` from anywhere or from a specific Git/MVN project.
-Once launched, two things can happen:
-
- 1. a few questions will be asked if the current directory does not belong to a MVN/GIT project file tree
- 1. you will have to select the commits you want to display and decide to keep their description, overwrite it OR have no description at all
+`jirac` must be launched from a specific Git/MVN project. Otherwise an informative message will be displayed.
+Once launched, you will have to select the commits you want to display and decide to keep their description, overwrite it OR have no description at all
 
 Then, your commit selection will be formatted as a nice informative comment and inserted into your clipboard.
 

@@ -14,14 +14,7 @@ clipboard.
 > such as version, branch, project name and prompts pushed
 > commits you authored for selection. Once commits are selected,
 > the comment is ready to be pasted!
->
 > 
-> 
-> In addition, **jirac** can be invoked outside a Git/Maven
-> project and then prompts additional questions in order to
-> resolve the project against which you want to work. This more
-> interactive mode requires a configuration file
-> **~/.jiracomments**.
 
 **OPTIONS**
 > **-n** number-of-commits
