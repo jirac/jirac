@@ -200,8 +200,12 @@ elif [[ "$print_mode" = "1" ]]; then
         complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
         echo "* $(jirac_get_git_subject "$project_git_location" $complete_sha1)" >> "$temp_clip"
         echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
-        echo -e "** " >> "$temp_clip"
-        echo -e "$(jirac_get_git_body "$project_git_location" $complete_sha1)\n" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
+        body=$(jirac_get_git_body "$project_git_location" $complete_sha1)
+        echo "body=ooo${body}ooo"
+        if [ "$body" != "" ]; then
+            echo -e "** " >> "$temp_clip"
+            echo -e "${body}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
+        fi
     done
 fi
 
