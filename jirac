@@ -55,7 +55,7 @@ echo -ne "# \033[7mCONFIGURATION CHECK...\033[m "
 create_editor_variable
 
 echo " OK!"
-echo 
+echo
 
 echo -e "# \033[7mQUESTION TIME!\033[m"
 
@@ -79,7 +79,7 @@ if [ ! -f  "$project_pom" ]; then
     	exit 1
 fi
 
-if [ ! -d "$project_git_location" ]; then 
+if [ ! -d "$project_git_location" ]; then
     	jirac_log ERROR "The provided directory is not a git repository. Aborting."
     	exit 1
 fi
@@ -94,6 +94,9 @@ echo "## Grabbing Maven name, artifact version and SCM URL... "
 project=$(jirac_get_maven_project_name "$project_pom")
 project_version=$(jirac_get_maven_version "$project_pom")
 gitlab_base_url=$(jirac_get_scm_url "$project_pom")
+if [ "$gitlab_base_url" = "" ]; then
+	gitlab_base_url=$(jirac_get_connection_url "$project_pom")
+fi
 
 if [ -z "$project_version" ]; then
 	echo "no version found!"
@@ -134,7 +137,7 @@ else
     echo -e "## Which commit \033[1mSHA1s\033[m?"
     while [ -z "$short_hashes" ]; do
         temp_file=$(jirac_mktemp)
-        
+
         echo "# Select a commit by prepending 'x ' (without quotes)" > "$temp_file"
         git --git-dir="${project_git_location}" log -10  --committer="${author}" --format='%h %s' $branch >> "$temp_file"
         eval "$editor" "$temp_file"

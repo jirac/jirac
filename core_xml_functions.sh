@@ -20,5 +20,10 @@ jirac_get_maven_project_name() {
 
 jirac_get_scm_url() {
 	cmd=`xml_parser`
+	echo $($cmd sel -N ns="http://maven.apache.org/POM/4.0.0" -t -m "/ns:project/ns:scm/ns:url/text()" -c . -n "$1")
+}
+
+jirac_get_connection_url() {
+	cmd=`xml_parser`
 	echo $($cmd sel -N ns="http://maven.apache.org/POM/4.0.0" -t -m "/ns:project/ns:scm/ns:connection/text()" -c . -n "$1" | cut -d':' -f3- | sed  's/\.git//')
 }
