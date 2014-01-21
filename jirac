@@ -8,8 +8,11 @@ source "$jirac_dir"/ui_functions.sh
 
 jirac_banner_print
 
+# default values
+print_mode="0"
+
 # FIXME: Export this snippet in a method. Not successful now
-while getopts ":n:" opt; do
+while getopts ":n:p:" opt; do
     case $opt in
         n)
             if [ $OPTARG -gt 0 ]; then
@@ -19,6 +22,10 @@ while getopts ":n:" opt; do
                 jirac_help
                 exit 1
             fi
+            ;;
+        p)
+            print_mode="$OPTARG"
+            jirac_verify_print_mode
             ;;
         \?)
             jirac_help
@@ -145,25 +152,6 @@ else
     done
 fi
 
-# description override
-for sha in $short_hashes; do
-	msg=$(jirac_get_git_full_message "$project_git_location" $sha)"\n"
-	default_description="${default_description}$msg"
-done
-
-read -p "## Override description (y/n/skip)? " -n 1 -r
-echo ""
-if [[ $REPLY == "Y" || $REPLY == "y" ]]; then
-	while [ -z "$description" ]; do
-		echo -ne "\t... which is? "
-		read description
-	done
-elif [[ $REPLY == "S" || $REPLY == "s" ]]; then
-	description=''
-else
-	description=$default_description
-fi
-
 echo ""
 echo -e "## \033[7mFINAL RESULT...\033[m"
 
@@ -174,16 +162,47 @@ temp_clip=$(jirac_mktemp)
 echo "
 *$project*
 * branche   : $branch
-* version   : $project_version
-* commit(s) :" > "$temp_clip"
-for hash in $short_hashes; do
-    	complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
-	echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
-done
+* version   : $project_version" > "$temp_clip"
+if [ "$print_mode" = "0" ]; then
+    echo "* commit(s) :" >> "$temp_clip"
+    for hash in $short_hashes; do
+        complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
+        echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
 
-if [ -n "${description}" ]; then
-	echo -e "* Description:" >> "$temp_clip"
-	echo -e "${description}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
+        # compute description
+        msg=$(jirac_get_git_full_message "$project_git_location" $sha)"\n"
+        default_description="${default_description}$msg"
+    done
+
+    # description override
+    read -p "## Override description (y/n/skip)? " -n 1 -r
+    echo ""
+    if [[ $REPLY == "Y" || $REPLY == "y" ]]; then
+        while [ -z "$description" ]; do
+            echo -ne "\t... which is? "
+            read description
+        done
+    elif [[ $REPLY == "S" || $REPLY == "s" ]]; then
+        description=''
+    else
+        description=$default_description
+    fi
+
+    # append description
+    if [ -n "${description}" ]; then
+        echo -e "* Description:" >> "$temp_clip"
+        echo -e "${description}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
+    fi
+elif [[ "$print_mode" = "1" ]]; then
+    # reverse list of commits to print them oldest first
+    short_hashes=$(echo $short_hashes | tac --separator=" ")
+    for hash in $short_hashes; do
+        complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
+        echo "* $(jirac_get_git_subject "$project_git_location" $complete_sha1)" >> "$temp_clip"
+        echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
+        echo -e "** " >> "$temp_clip"
+        echo -e "$(jirac_get_git_body "$project_git_location" $complete_sha1)\n" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
+    done
 fi
 
 jirac_copy_to_clipboard "$temp_clip"
