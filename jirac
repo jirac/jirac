@@ -170,7 +170,7 @@ if [ "$print_mode" = "0" ]; then
         echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
 
         # compute description
-        msg=$(jirac_get_git_full_message "$project_git_location" $sha)"\n"
+        msg=$(jirac_get_git_full_message "$project_git_location" $hash)"\n"
         default_description="${default_description}$msg"
     done
 
