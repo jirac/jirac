@@ -210,4 +210,4 @@ fi
 
 jirac_copy_to_clipboard "$temp_clip"
 
-jirac_victorious_print
+#jirac_victorious_print
