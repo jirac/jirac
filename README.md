@@ -77,8 +77,6 @@ To remain on the safe side, `jirac` therefore enforces *pushed* commit selection
 
 :fearful:
 
-Ping `@Ismael`/`@Glip` on Flowdock :thumbsup:
-
-Create a [Gitlab issue](https://gitlab.fullsix.com/sfr-sandbox/jira-comment/issues) if needed with as much as details as you can.
+Create a [Github issue](https://github.com/jirac/jirac/issues) if needed with as much as details as you can.
 
 
