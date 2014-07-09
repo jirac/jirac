@@ -10,9 +10,6 @@ It will insert the comment contents right into your clipboard.
 
 ## Downloads
 
-### Stable version
-
-Here you go: https://gitlab.fullsix.com/sfr-sandbox/jira-comment/repository/archive?ref=v1.0.
 
 ### Latest
 
@@ -52,9 +49,6 @@ If you plan to export a graphical editor (such as gedit, Sublime Text etc), you 
 
 Obviously regardless of the editor you use, **escape spaces in its path before exporting it**!
 
-## Manual
-
-See [this](../blob/master/MANUAL.md) doc.
 
 ## Execution
 
