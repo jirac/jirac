@@ -50,30 +50,6 @@ jirac_help() {
     echo "             - second level items of each commit are : the link to the commit, the body of the commit"
 }
 
-jirac_read_option() {
-    while getopts ":n:" opt; do
-        case $opt in
-            n)
-                if [ $OPTARG -gt 0 ]; then
-                    echo "and it's positive"
-                    number_of_commit=$OPTARG
-                else
-                    jirac_help
-                    exit 1
-                fi
-                ;;
-            \?)
-                jirac_help
-                exit 1
-                ;;
-            :)
-                echo "Option -$OPTARG requires an argument." >&2
-                exit 1
-                ;;
-        esac
-    done
-}
-
 jirac_banner_print() {
 echo "
        _ _____ _____              _          _                 _
