@@ -1,5 +1,15 @@
 #!/bin/bash
 
+error(){
+    echo "$@" >&2
+    usage_and_exit 1
+}
+
+usage_and_exit(){
+    jirac_help
+    exit $1
+}
+
 jirac_select() {
 	local PS3="${1} ? --> "
 	cd $3
@@ -14,12 +24,15 @@ jirac_select() {
 	done
 }
 
-jirac_verify_print_mode() {
-    if [ "$print_mode" != "0" ] && [ "$print_mode" != "1" ]; then
-        echo "Print mode value is invalid"
-        jirac_help
-        exit 1
-    fi
+jirac_apply_print_mode() {
+    case $1 in 
+        "0" | "1" | 0 | 1 )
+            print_mode=$1 
+            ;;
+        * )
+        error "Print mode value is invalid"
+        ;;
+    esac
 }
 
 jirac_help() {
@@ -38,30 +51,6 @@ jirac_help() {
     echo "             - each commit get its own first level sublist"
     echo "             - first level item of each commit is the subject of the commit"
     echo "             - second level items of each commit are : the link to the commit, the body of the commit"
-}
-
-jirac_read_option() {
-    while getopts ":n:" opt; do
-        case $opt in
-            n)
-                if [ $OPTARG -gt 0 ]; then
-                    echo "and it's positive"
-                    number_of_commit=$OPTARG
-                else
-                    jirac_help
-                    exit 1
-                fi
-                ;;
-            \?)
-                jirac_help
-                exit 1
-                ;;
-            :)
-                echo "Option -$OPTARG requires an argument." >&2
-                exit 1
-                ;;
-        esac
-    done
 }
 
 jirac_banner_print() {

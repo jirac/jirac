@@ -6,38 +6,37 @@ source "$jirac_dir"/core_functions.sh
 source "$jirac_dir"/ui_functions.sh
 
 
-jirac_banner_print
 
 # default values
 print_mode="0"
 
 # FIXME: Export this snippet in a method. Not successful now
-while getopts ":n:p:" opt; do
-    case $opt in
-        n)
-            if [ $OPTARG -gt 0 ]; then
-                echo "and it's positive"
-                number_of_commit=$OPTARG
-            else
-                jirac_help
-                exit 1
-            fi
-            ;;
-        p)
-            print_mode="$OPTARG"
-            jirac_verify_print_mode
-            ;;
-        \?)
-            jirac_help
-            exit 1
-            ;;
-        :)
-            echo "Option -$OPTARG requires an argument." >&2
-            exit 1
-            ;;
-    esac
-done
+while [ $# -gt 0 ] 
+do
+        case $1 in
+            --number | -number | --n | -n )
+                test -z "$2" && error "Number of commits requires an argument!"
+                test 0 -gt "$2" && error "Number of commits option must be positive"
+                number_of_commit=$2
+                ;;
+            --print-mode | -print-mode | --p | -p )
+                test -z $2 && error "Print mode requires an argument!"
+                jirac_apply_print_mode $2
+                ;;
+            --help | -help | --h | -h | --? | -? )
+                usage_and_exit
+                ;;
+            -* )
+                error "Unreconized option: $1"
+                ;;
+            * )
+                break
+                ;;
+        esac
+        shift
+    done
 
+jirac_banner_print
 echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
 
 if [[ $OSTYPE == darwin* ]]; then
