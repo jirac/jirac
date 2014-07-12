@@ -67,6 +67,10 @@ Therefore, the early-generated commits' URLs are likely to be wrong as it will i
 
 To remain on the safe side, `jirac` therefore enforces *pushed* commit selection.
 
+## Manual
+
+See [this](http://ihommani.gitbooks.io/jirac-guide/) doc.
+
 ## Troubleshooting
 
 :fearful:
