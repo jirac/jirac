@@ -1,5 +1,15 @@
 #!/bin/bash
 
+error(){
+    echo "$@" >&2
+    usage_and_exit 1
+}
+
+usage_and_exit(){
+    jirac_help
+    exit $1
+}
+
 jirac_select() {
 	local PS3="${1} ? --> "
 	cd $3
