@@ -24,12 +24,15 @@ jirac_select() {
 	done
 }
 
-jirac_verify_print_mode() {
-    if [ "$print_mode" != "0" ] && [ "$print_mode" != "1" ]; then
-        echo "Print mode value is invalid"
-        jirac_help
-        exit 1
-    fi
+jirac_apply_print_mode() {
+    case $1 in 
+        "0" | "1" | 0 | 1 )
+            print_mode=$1 
+            ;;
+        * )
+        error "Print mode value is invalid"
+        ;;
+    esac
 }
 
 jirac_help() {
