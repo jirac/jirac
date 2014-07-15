@@ -41,10 +41,16 @@ jirac_apply_print_mode() {
 }
 
 jirac_help() {
-    echo "usage: jirac [-n number_of_commit] [ -p print_mode ]"
-    echo "    -n : shortcut to select the n last commits without interactively selecting them"
+    echo "usage: jirac [-n number_of_commit] [ -p print_mode ] [--help] [--silent]"
+    echo "    --number, -n : shortcut to select the n last pushed commits without interactively selecting them"
     echo "         parameter must be a positive integer"
-    echo "    -p : select print_mode, supported value are "
+    echo "         "
+    echo "    --help, -h: Display this help"
+    echo "         "
+    echo "    --silent, -s: Run jirac on silent mode. I.e no more fancy helper prints"
+    echo "         "
+    echo "    --print-mode, -p: select print_mode, supported value are "
+    echo "         "
     echo "         0 : original printing mode of JIRAC"
     echo "             - default print mode, used when option -p is not specified"
     echo "             - commits are listed in most-recent-first order"
