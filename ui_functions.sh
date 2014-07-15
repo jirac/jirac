@@ -5,6 +5,11 @@ error(){
     usage_and_exit 1
 }
 
+model_error(){
+    echo "$@" >&2
+    exit 1
+}
+
 usage_and_exit(){
     jirac_help
     exit $1

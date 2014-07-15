@@ -109,19 +109,16 @@ if [ "$gitlab_base_url" = "" ]; then
 fi
 
 if [ -z "$project_version" ]; then
-	echo "no version found!"
 	jirac_log ERROR "Either you don't follow a semantic versioning scheme or this is not a Maven project. Aborting."
-	exit 1
+	model_error "no version found!"
 
 elif [ -z "$project" ]; then
-	echo "no project name found!"
 	jirac_log ERROR "Please check <name> is present in your POM"
-	exit 1
+	model_error "no project name found!"
 
 elif [ -z "$gitlab_base_url" ]; then
-	echo "no SCM URL found!"
 	jirac_log ERROR "Please make a section <scm><connection> is present in your POM"
-	exit 1
+	model_error "no SCM URL found!"
 else
 	test "$silent_mode" = "no" && echo " OK!"
 	jirac_log INFO "version: $project_version"
