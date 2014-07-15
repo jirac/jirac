@@ -8,14 +8,27 @@ jirac_check_dependency() {
 	command -v $1 >/dev/null 2>&1 || { echo >&2 log ERROR "${1} is required but is not installed.  Aborting."; exit 1;}
 }
 
+
+
 jirac_log() {
-	if [ $1 = "ERROR" ]; then
-		echo "[ERROR] $2";
-	elif [ $1 = "INFO" ]; then 
-		echo "[INFO] $2";
-	elif [ $1 = "DEBUG" ]; then 
-		echo "[DEBUG] $2";
-	fi
+    log_type=$1
+    shift
+    log_description=$1
+
+    if [ "$silent_mode" = "no" ]
+    then
+        case $log_type in
+            "ERROR" )
+                echo "[ERROR] $log_description"
+                ;;
+            "INFO" )
+                echo "[INFO] $log_description"
+                ;;
+            "DEBUG" )
+                echo "[DEBUG] $log_description"
+                ;;
+        esac
+    fi
 }
 
 jirac_copy_to_clipboard() {

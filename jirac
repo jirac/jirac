@@ -5,12 +5,12 @@ jirac_dir=$(dirname "$0")
 source "$jirac_dir"/core_functions.sh
 source "$jirac_dir"/ui_functions.sh
 
+silent_mode="no" # think that a string tells more than number
 
 
 # default values
 print_mode="0"
 
-# FIXME: Export this snippet in a method. Not successful now
 while [ $# -gt 0 ] 
 do
         case $1 in
@@ -22,6 +22,9 @@ do
             --print-mode | -print-mode | --p | -p )
                 test -z $2 && error "Print mode requires an argument!"
                 jirac_apply_print_mode $2
+                ;;
+            --silent | -silent | --s | -s )
+                silent_mode="yes"
                 ;;
             --help | -help | --h | -h | --? | -? )
                 usage_and_exit
@@ -36,8 +39,8 @@ do
         shift
     done
 
-jirac_banner_print
-echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
+test "$silent_mode" = "no" && jirac_banner_print
+test "$silent_mode" = "no" && echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
 
 if [[ $OSTYPE == darwin* ]]; then
         jirac_check_dependency pbcopy
@@ -52,18 +55,18 @@ for dependency in git sed `xml_parser`; do
 	jirac_check_dependency $dependency
 done
 
-echo
-echo
+test "$silent_mode" = "no" && echo
+test "$silent_mode" = "no" && echo
 
-echo -ne "# \033[7mCONFIGURATION CHECK...\033[m "
+test "$silent_mode" = "no" && echo -ne "# \033[7mCONFIGURATION CHECK...\033[m "
 
 
 create_editor_variable
 
-echo " OK!"
-echo
+test "$silent_mode" = "no" && echo " OK!"
+test "$silent_mode" = "no" && echo
 
-echo -e "# \033[7mQUESTION TIME!\033[m"
+test "$silent_mode" = "no" && echo -e "# \033[7mQUESTION TIME!\033[m"
 
 # project folder
 
@@ -91,11 +94,12 @@ if [ ! -d "$project_git_location" ]; then
 fi
 
 jirac_log INFO "Project root directory: $project_path"
-echo
+test "$silent_mode" = "no" && echo
+
 
 # version
 
-echo "## Grabbing Maven name, artifact version and SCM URL... "
+test "$silent_mode" = "no" && echo "## Grabbing Maven name, artifact version and SCM URL... "
 
 project=$(jirac_get_maven_project_name "$project_pom")
 project_version=$(jirac_get_maven_version "$project_pom")
@@ -119,7 +123,7 @@ elif [ -z "$gitlab_base_url" ]; then
 	jirac_log ERROR "Please make a section <scm><connection> is present in your POM"
 	exit 1
 else
-	echo " OK!"
+	test "$silent_mode" = "no" && echo " OK!"
 	jirac_log INFO "version: $project_version"
 	jirac_log INFO "SCM URL: $gitlab_base_url"
 	jirac_log INFO "name: $project"
@@ -140,7 +144,7 @@ author=$(git config user.name)
 if [ -n "$number_of_commit" ];then
     short_hashes=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --committer="${author}" --format=%h $branch)
 else
-    echo -e "## Which commit \033[1mSHA1s\033[m?"
+    test "$silent_mode" = "no" && echo -e "## Which commit \033[1mSHA1s\033[m?"
     while [ -z "$short_hashes" ]; do
         temp_file=$(jirac_mktemp)
 
@@ -152,7 +156,7 @@ else
 fi
 
 echo ""
-echo -e "## \033[7mFINAL RESULT...\033[m"
+test "$silent_mode" = "no" && echo -e "## \033[7mFINAL RESULT...\033[m"
 
 
 temp_clip=$(jirac_mktemp)
@@ -209,4 +213,4 @@ fi
 
 jirac_copy_to_clipboard "$temp_clip"
 
-#jirac_victorious_print
+test "$silent_mode" = "no" && jirac_victorious_print
