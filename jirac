@@ -1,4 +1,23 @@
 #!/bin/bash
+#
+# Jirac is a tool to generate formatted comments based on informations such as 
+# commits, branch, version and concerned application.
+#
+# Must be used at the root of a maven project. POM must contains scm 
+# balise. It allows jirac to generate link to the source repository.
+# The output is a message you can paste in jira
+#
+# Usage: jirac [--help|-h] [--number|-ni number_of_commits] [--print-mode|-p mode] [--silent|-s]
+# With the --number option, you specify you want the n last pushed commit in your comment
+# With the --silent option, log print are disabled
+# With the --print-mode, you specify the order of the commit in the message. 
+# 0: Most recent first
+# 1: oldest first
+#
+# More information can be find at the following url: http://ihommani.gitbooks.io/jirac-guide/
+#
+# This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+
 shopt -u sourcepath
 jirac_dir=$(dirname "$0")
 
