@@ -26,6 +26,7 @@ source "$jirac_dir"/ui_functions.sh
 
 silent_mode="no" # think that a string tells more than number
 
+umask 077 # Set access file only to the user who launched the script
 
 # default values
 print_mode="0"
