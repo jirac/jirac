@@ -127,7 +127,8 @@ test "$silent_mode" = "no" && echo "## Grabbing Maven name, artifact version and
 project=$(jirac_get_maven_project_name "$project_pom")
 project_version=$(jirac_get_maven_version "$project_pom")
 gitlab_base_url=$(jirac_get_scm_url "$project_pom")
-if [ "$gitlab_base_url" = "" ]; then
+if [ -z "$gitlab_base_url" ]
+then
 	gitlab_base_url=$(jirac_get_connection_url "$project_pom")
 fi
 
