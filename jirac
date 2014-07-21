@@ -181,7 +181,7 @@ elif [ -n "$regexp" ];then
     [ -z "$short_hashes" ] && echo No commit matching the regexp: "$regexp" && exit 1
 else
     test "$silent_mode" = "no" && echo -e "## Which commit \033[1mSHA1s\033[m?"
-    while [ -z "$short_hashes" ]; do
+    until [ -n "$short_hashes" ]; do
         temp_file=$(jirac_mktemp)
 
         echo "# Select a commit by prepending 'x ' (without quotes)" > "$temp_file"
