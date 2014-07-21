@@ -73,7 +73,8 @@ else
         jirac_check_dependency xclip
 fi
 
-for dependency in git sed `xml_parser`; do
+for dependency in git sed xml_parser
+do
 	jirac_check_dependency $dependency
 done
 
