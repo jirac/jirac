@@ -170,7 +170,7 @@ if [ -n "$number_of_commit" ];then
     short_hashes=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --committer="${author}" --format=%h $branch)
 else
     test "$silent_mode" = "no" && echo -e "## Which commit \033[1mSHA1s\033[m?"
-    while [ -z "$short_hashes" ]; do
+    until [ -n "$short_hashes" ]; do
         temp_file=$(jirac_mktemp)
 
         echo "# Select a commit by prepending 'x ' (without quotes)" > "$temp_file"
