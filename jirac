@@ -38,6 +38,7 @@ do
                 test -z "$2" && error "Number of commits requires an argument!"
                 test 0 -gt "$2" && error "Number of commits option must be positive"
                 number_of_commit=$2
+                shift
                 ;;
             --print-mode | -print-mode | --p | -p )
                 test -z $2 && error "Print mode requires an argument!"
