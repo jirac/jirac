@@ -159,6 +159,10 @@ done
 # commits
 author=$(git config user.name)
 
+if [ -z "$(git log -1 --committer="${author}" $branch)" ];then
+    error "You have no pushed commit on this project. Only author of commit can generate comments."
+fi
+
 if [ -n "$number_of_commit" ];then
     short_hashes=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --committer="${author}" --format=%h $branch)
 else
