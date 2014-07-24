@@ -43,6 +43,7 @@ do
             --print-mode | -print-mode | --p | -p )
                 test -z $2 && error "Print mode requires an argument!"
                 jirac_apply_print_mode $2
+                shift
                 ;;
             --silent | -silent | --s | -s )
                 silent_mode="yes"
