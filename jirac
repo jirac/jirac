@@ -7,10 +7,11 @@
 # balise. It allows jirac to generate link to the source repository.
 # The output is a message you can paste in jira
 #
-# Usage: jirac [--help|-h] [--number|-ni number_of_commits] [--print-mode|-p mode] [--silent|-s]
+# Usage: jirac [--help|-h] [--number|-n number_of_commits] [--print-mode|-p mode] [--silent|-s] [--grep|-g pattern]
 # With the --number option, you specify you want the n last pushed commit in your comment
 # With the --silent option, log print are disabled
 # With the --print-mode, you specify the order of the commit in the message. 
+# With the --grep, you specify a pattern match commits. If none match, the programm exits 
 # 0: Most recent first
 # 1: oldest first
 #
@@ -47,6 +48,10 @@ do
                 ;;
             --silent | -silent | --s | -s )
                 silent_mode="yes"
+                ;;
+            --grep | -grep | --g | -g )
+                regexp=$2
+                shift
                 ;;
             --help | -help | --h | -h | --? | -? )
                 usage_and_exit
@@ -164,8 +169,14 @@ if [ -z "$(git log -1 --committer="${author}" $branch)" ];then
     error "You have no pushed commit on this project. Only author of commit can generate comments."
 fi
 
-if [ -n "$number_of_commit" ];then
+# Using the option -n (number of commit), -g (grep). If either one or both are specified, no need to manually select commits.
+if [ -n "$number_of_commit" ] && [ -n "$regexp" ];then
+    short_hashes=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --grep "$regexp" --committer="${author}" --format=%h $branch)
+elif [ -n "$number_of_commit" ];then
     short_hashes=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --committer="${author}" --format=%h $branch)
+elif [ -n "$regexp" ];then
+    short_hashes=$(git --git-dir="${project_git_location}" log --committer="${author}" --grep "$regexp"  --format=%h $branch)
+    [ -z "$short_hashes" ] && echo No commit matching the regexp: "$regexp" && exit 1
 else
     test "$silent_mode" = "no" && echo -e "## Which commit \033[1mSHA1s\033[m?"
     while [ -z "$short_hashes" ]; do
