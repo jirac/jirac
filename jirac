@@ -51,6 +51,7 @@ do
                 ;;
             --grep | -grep | --g | -g )
                 regexp=$2
+                test -z $regexp && error "grep option requires a regexp."
                 shift
                 ;;
             --help | -help | --h | -h | --? | -? )
