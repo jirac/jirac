@@ -41,13 +41,16 @@ jirac_apply_print_mode() {
 }
 
 jirac_help() {
-    echo "usage: jirac [-n number_of_commit] [ -p print_mode ] [--help] [--silent]"
+    echo "usage: jirac [-n number_of_commit] [ -p print_mode ] [--help] [--silent] [-grep regexp]"
     echo "    --number, -n : shortcut to select the n last pushed commits without interactively selecting them"
     echo "         parameter must be a positive integer"
     echo "         "
     echo "    --help, -h: Display this help"
     echo "         "
     echo "    --silent, -s: Run jirac on silent mode. I.e no more fancy helper prints"
+    echo "         "
+    echo "    --grep, -g: shortcut to select commits whose short description match the provided regexp"
+    echo "         "
     echo "         "
     echo "    --print-mode, -p: select print_mode, supported value are "
     echo "         "
