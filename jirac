@@ -130,13 +130,9 @@ test "$silent_mode" = "no" && echo
 
 test "$silent_mode" = "no" && echo "## Grabbing Maven name, artifact version and SCM URL... "
 
-project=$(jirac_get_maven_project_name "$project_pom")
-project_version=$(jirac_get_maven_version "$project_pom")
-gitlab_base_url=$(jirac_get_scm_url "$project_pom")
-if [ -z "$gitlab_base_url" ]
-then
-	gitlab_base_url=$(jirac_get_connection_url "$project_pom")
-fi
+jirac_get_maven_project_name "$project_pom" # initiate $project
+jirac_get_maven_version "$project_pom" # initiate $project_version
+jirac_get_repository_url "$project_pom" # initiate $repository_base_url
 
 if [ -z "$project_version" ]; then
 	jirac_log ERROR "Either you don't follow a semantic versioning scheme or this is not a Maven project. Aborting."
@@ -146,13 +142,13 @@ elif [ -z "$project" ]; then
 	jirac_log ERROR "Please check <name> is present in your POM"
 	model_error "no project name found!"
 
-elif [ -z "$gitlab_base_url" ]; then
+elif [ -z "$repository_base_url" ]; then
 	jirac_log ERROR "Please make a section <scm><connection> is present in your POM"
 	model_error "no SCM URL found!"
 else
 	test "$silent_mode" = "no" && echo " OK!"
 	jirac_log INFO "version: $project_version"
-	jirac_log INFO "SCM URL: $gitlab_base_url"
+	jirac_log INFO "SCM URL: $repository_base_url"
 	jirac_log INFO "name: $project"
 	echo ""
 fi
@@ -207,7 +203,7 @@ if [ "$print_mode" = "0" ]; then
     echo "* commit(s) :" >> "$temp_clip"
     for hash in $short_hashes; do
         complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
-        echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
+        echo "** $repository_base_url/commit/$complete_sha1" >> "$temp_clip"
 
         # compute description
         msg=$(jirac_get_git_full_message "$project_git_location" $hash)"\n"
@@ -239,7 +235,7 @@ elif [[ "$print_mode" = "1" ]]; then
     for hash in $short_hashes; do
         complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
         echo "* $(jirac_get_git_subject "$project_git_location" $complete_sha1)" >> "$temp_clip"
-        echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
+        echo "** $repository_base_url/commit/$complete_sha1" >> "$temp_clip"
         body=$(jirac_get_git_body "$project_git_location" $complete_sha1)
         if [ "$body" != "" ]; then
             echo -e "** " >> "$temp_clip"
