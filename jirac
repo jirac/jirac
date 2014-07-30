@@ -133,6 +133,7 @@ test "$silent_mode" = "no" && echo "## Grabbing Maven name, artifact version and
 jirac_get_maven_project_name "$project_pom" # initiate $project
 jirac_get_maven_version "$project_pom" # initiate $project_version
 jirac_get_repository_url "$project_pom" # initiate $repository_base_url
+format_repo_url $repository_base_url # Replace pattern 'git@' by 'https://'
 
 if [ -z "$project_version" ]; then
 	jirac_log ERROR "Either you don't follow a semantic versioning scheme or this is not a Maven project. Aborting."

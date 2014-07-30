@@ -25,3 +25,13 @@ jirac_get_repository_url() {
 	    repository_base_url=$($cmd sel -N ns="http://maven.apache.org/POM/4.0.0" -t -m "/ns:project/ns:scm/ns:connection/text()" -c . -n "$1" | cut -d':' -f3- | sed  's/\.git//')
     fi
 }
+
+format_repo_url(){
+    url="$1"
+    if [ -n $url ] && [ $(echo $url | grep "git@") ];then
+        TEMPFILE=${TMPDIR-/tmp}/jirac.$$
+        echo $url > $TEMPFILE
+        repository_base_url=$(sed -e 's;:;/;g' -e 's;git@;https://;g' $TEMPFILE )
+        rm -f $TEMPFILE
+    fi
+}

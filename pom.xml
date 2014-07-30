@@ -21,10 +21,10 @@
 
     <scm>
         <connection>
-            scm:git:http://somerepository.com/svn_repo/trunk
+            scm:git:git@github.com:jirac/jirac.git
         </connection>
         <developerConnection>
-            scm:git:http://somerepository.com/svn_repo/trunk
+            scm:git:git@github.com:jirac/jirac.git
         </developerConnection>
     </scm>
     
