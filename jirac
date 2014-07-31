@@ -125,7 +125,7 @@ jirac_echo ""
 
 jirac_echo "## Grabbing Maven name, artifact version and SCM URL... "
 
-project=$(jirac_get_maven_project_name "$project_pom")
+project=$(jirac_get_maven_project_artifact_id "$project_pom")
 project_version=$(jirac_get_maven_version "$project_pom")
 gitlab_base_url=$(jirac_get_scm_url "$project_pom")
 if [ -z "$gitlab_base_url" ]

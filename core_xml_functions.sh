@@ -13,9 +13,9 @@ jirac_get_maven_version() {
 	echo $($cmd sel -N ns="http://maven.apache.org/POM/4.0.0" -t -m "/ns:project/ns:version/text()" -c . -n "$1")
 }
 
-jirac_get_maven_project_name() {
+jirac_get_maven_project_artifact_id() {
 	cmd=`xml_parser`
-	echo $($cmd sel -N ns="http://maven.apache.org/POM/4.0.0" -t -m "/ns:project/ns:name/text()" -c . -n "$1")
+	echo $($cmd sel -N ns="http://maven.apache.org/POM/4.0.0" -t -m "/ns:project/ns:artifactId/text()" -c . -n "$1")
 }
 
 jirac_get_scm_url() {
