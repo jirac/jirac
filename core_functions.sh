@@ -9,7 +9,6 @@ jirac_check_dependency() {
 }
 
 
-
 jirac_log() {
     log_type=$1
     shift
