@@ -50,7 +50,7 @@ Obviously regardless of the editor you use, **escape spaces in its path before e
 
 ## Execution
 
-`jirac` must be executed from the root directory of a Maven project version controlled with Git. Otherwise an informative message will be displayed.
+`jirac` may be executed from the any directory of a Maven project version controlled with Git. Otherwise an informative message will be displayed.
 
 After selecting one or more commits, either interractively or with command line arguments, `jirac` will generate a formatted text for JIRA 
 with the following information and copy it to your clipboard:
