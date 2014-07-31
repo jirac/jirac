@@ -66,8 +66,8 @@ do
         shift
     done
 
-test "$silent_mode" = "no" && jirac_banner_print
-test "$silent_mode" = "no" && echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
+jirac_banner_print
+jirac_echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
 
 if [[ $OSTYPE == darwin* ]]; then
     jirac_check_dependency pbcopy
@@ -83,17 +83,15 @@ do
 	jirac_check_dependency $dependency
 done
 
-test "$silent_mode" = "no" && echo
-test "$silent_mode" = "no" && echo
-
-test "$silent_mode" = "no" && echo -ne "# \033[7mCONFIGURATION CHECK...\033[m "
+jirac_echo ""
+jirac_echo ""
+jirac_echo -ne "# \033[7mCONFIGURATION CHECK...\033[m "
 
 create_editor_variable
 
-test "$silent_mode" = "no" && echo " OK!"
-test "$silent_mode" = "no" && echo
-
-test "$silent_mode" = "no" && echo -e "# \033[7mQUESTION TIME!\033[m"
+jirac_echo " OK!"
+jirac_echo ""
+jirac_echo -e "# \033[7mQUESTION TIME!\033[m"
 
 # project folder
 
@@ -120,12 +118,12 @@ if [ ! -d "$project_git_location" ]; then
 fi
 
 jirac_log INFO "Project root directory: $project_path"
-test "$silent_mode" = "no" && echo
+jirac_echo ""
 
 
 # version
 
-test "$silent_mode" = "no" && echo "## Grabbing Maven name, artifact version and SCM URL... "
+jirac_echo "## Grabbing Maven name, artifact version and SCM URL... "
 
 project=$(jirac_get_maven_project_name "$project_pom")
 project_version=$(jirac_get_maven_version "$project_pom")
@@ -147,11 +145,11 @@ elif [ -z "$gitlab_base_url" ]; then
     jirac_log ERROR "Please make a section <scm><connection> is present in your POM"
     model_error "no SCM URL found!"
 else
-    test "$silent_mode" = "no" && echo " OK!"
+    jirac_echo " OK!"
     jirac_log INFO "version: $project_version"
     jirac_log INFO "SCM URL: $gitlab_base_url"
     jirac_log INFO "name: $project"
-    echo ""
+    jirac_echo ""
 fi
 
 
@@ -178,7 +176,7 @@ elif [ -n "$regexp" ];then
     short_hashes=$(git --git-dir="${project_git_location}" log --committer="${author}" --grep "$regexp"  --format=%h $branch)
     [ -z "$short_hashes" ] && echo No commit matching the regexp: "$regexp" && exit 1
 else
-    test "$silent_mode" = "no" && echo -e "## Which commit \033[1mSHA1s\033[m?"
+    jirac_echo -e "## Which commit \033[1mSHA1s\033[m?"
     until [ -n "$short_hashes" ]; do
         temp_file=$(jirac_mktemp)
 
@@ -189,8 +187,8 @@ else
     done
 fi
 
-echo ""
-test "$silent_mode" = "no" && echo -e "## \033[7mFINAL RESULT...\033[m"
+jirac_echo ""
+jirac_echo -e "## \033[7mFINAL RESULT...\033[m"
 
 
 temp_clip=$(jirac_mktemp)
@@ -247,4 +245,4 @@ fi
 
 jirac_copy_to_clipboard "$temp_clip"
 
-test "$silent_mode" = "no" && jirac_victorious_print
+jirac_victorious_print

@@ -67,7 +67,7 @@ jirac_help() {
 }
 
 jirac_banner_print() {
-echo "
+jirac_echo "
        _ _____ _____              _          _                 _
       | |_   _|  __ \     /\     | |        | |               | |
       | | | | | |__) |   /  \    | |__   ___| |_ __   ___ _ __| |
@@ -84,7 +84,7 @@ jirac_victorious_print(){
 }
 
 jirac_two_fingers(){
-    echo '
+    jirac_echo '
                             __
                            /  \
                           |    |
@@ -117,6 +117,10 @@ jirac_two_fingers(){
             |                |
             |                |
     '
-    echo "Paste it now \o/"
+    jirac_echo "Paste it now \o/"
+}
+
+jirac_echo() {
+    test "$silent_mode" = "no" && echo $1
 }
 
