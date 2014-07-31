@@ -30,9 +30,9 @@ jirac_select() {
 }
 
 jirac_apply_print_mode() {
-    case $1 in 
+    case $1 in
         "0" | "1" | 0 | 1 )
-            print_mode=$1 
+            print_mode=$1
             ;;
         * )
         error "Print mode value is invalid"
@@ -51,7 +51,7 @@ jirac_help() {
     echo "         "
     echo "    --grep, -g: shortcut to select commits whose short description match the provided regexp"
     echo "         "
-    echo "    --print-mode, -p: select print_mode, supported value are "
+    echo "    --print-mode, -p: select print_mode, supported values are "
     echo "         "
     echo "         0 : original printing mode of JIRAC"
     echo "             - default print mode, used when option -p is not specified"
@@ -67,7 +67,7 @@ jirac_help() {
 }
 
 jirac_banner_print() {
-echo "
+jirac_echo "
        _ _____ _____              _          _                 _
       | |_   _|  __ \     /\     | |        | |               | |
       | | | | | |__) |   /  \    | |__   ___| |_ __   ___ _ __| |
@@ -84,7 +84,7 @@ jirac_victorious_print(){
 }
 
 jirac_two_fingers(){
-    echo '
+    jirac_echo '
                             __
                            /  \
                           |    |
@@ -117,6 +117,10 @@ jirac_two_fingers(){
             |                |
             |                |
     '
-    echo "Paste it now \o/"
+    jirac_echo "Paste it now \o/"
+}
+
+jirac_echo() {
+    test "$silent_mode" = "no" && echo $1
 }
 
