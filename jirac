@@ -1,17 +1,17 @@
 #!/bin/bash
 #
-# Jirac is a tool to generate formatted comments based on informations such as 
+# Jirac is a tool to generate formatted comments based on informations such as
 # commits, branch, version and concerned application.
 #
-# Must be used at the root of a maven project. POM must contains scm 
+# Must be used at the root of a maven project. POM must contains scm
 # balise. It allows jirac to generate link to the source repository.
 # The output is a message you can paste in jira
 #
 # Usage: jirac [--help|-h] [--number|-n number_of_commits] [--print-mode|-p mode] [--silent|-s] [--grep|-g pattern]
 # With the --number option, you specify you want the n last pushed commit in your comment
 # With the --silent option, log print are disabled
-# With the --print-mode, you specify the order of the commit in the message. 
-# With the --grep, you specify a pattern match commits. If none match, the programm exits 
+# With the --print-mode, you specify the order of the commit in the message.
+# With the --grep, you specify a pattern match commits. If none match, the programm exits
 # 0: Most recent first
 # 1: oldest first
 #
@@ -25,14 +25,13 @@ jirac_dir=$(dirname "$0")
 source "$jirac_dir"/core_functions.sh
 source "$jirac_dir"/ui_functions.sh
 
-silent_mode="no" # think that a string tells more than number
-
 umask 077 # Set access file only to the user who launched the script
 
 # default values
+silent_mode="no" # think that a string tells more than number
 print_mode="0"
 
-while [ $# -gt 0 ] 
+while [ $# -gt 0 ]
 do
         case $1 in
             --number | -number | --n | -n )
@@ -71,12 +70,12 @@ test "$silent_mode" = "no" && jirac_banner_print
 test "$silent_mode" = "no" && echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
 
 if [[ $OSTYPE == darwin* ]]; then
-        jirac_check_dependency pbcopy
+    jirac_check_dependency pbcopy
 elif [[ $OSTYPE == msys ]]; then
-        jirac_check_dependency clip
-        jirac_check_dependency mktemp
+    jirac_check_dependency clip
+    jirac_check_dependency mktemp
 else
-        jirac_check_dependency xclip
+    jirac_check_dependency xclip
 fi
 
 for dependency in git sed xml_parser
@@ -88,7 +87,6 @@ test "$silent_mode" = "no" && echo
 test "$silent_mode" = "no" && echo
 
 test "$silent_mode" = "no" && echo -ne "# \033[7mCONFIGURATION CHECK...\033[m "
-
 
 create_editor_variable
 
@@ -111,15 +109,14 @@ else
 fi
 
 # sanity checks
-
 if [ ! -f  "$project_pom" ]; then
 	jirac_log ERROR "No POM file found in the project directory. Aborting."
-    	exit 1
+	exit 1
 fi
 
 if [ ! -d "$project_git_location" ]; then
-    	jirac_log ERROR "The provided directory is not a git repository. Aborting."
-    	exit 1
+    jirac_log ERROR "The provided directory is not a git repository. Aborting."
+    exit 1
 fi
 
 jirac_log INFO "Project root directory: $project_path"
@@ -135,26 +132,26 @@ project_version=$(jirac_get_maven_version "$project_pom")
 gitlab_base_url=$(jirac_get_scm_url "$project_pom")
 if [ -z "$gitlab_base_url" ]
 then
-	gitlab_base_url=$(jirac_get_connection_url "$project_pom")
+    gitlab_base_url=$(jirac_get_connection_url "$project_pom")
 fi
 
 if [ -z "$project_version" ]; then
-	jirac_log ERROR "Either you don't follow a semantic versioning scheme or this is not a Maven project. Aborting."
-	model_error "no version found!"
+    jirac_log ERROR "Either you don't follow a semantic versioning scheme or this is not a Maven project. Aborting."
+    model_error "no version found!"
 
 elif [ -z "$project" ]; then
-	jirac_log ERROR "Please check <name> is present in your POM"
-	model_error "no project name found!"
+    jirac_log ERROR "Please check <name> is present in your POM"
+    model_error "no project name found!"
 
 elif [ -z "$gitlab_base_url" ]; then
-	jirac_log ERROR "Please make a section <scm><connection> is present in your POM"
-	model_error "no SCM URL found!"
+    jirac_log ERROR "Please make a section <scm><connection> is present in your POM"
+    model_error "no SCM URL found!"
 else
-	test "$silent_mode" = "no" && echo " OK!"
-	jirac_log INFO "version: $project_version"
-	jirac_log INFO "SCM URL: $gitlab_base_url"
-	jirac_log INFO "name: $project"
-	echo ""
+    test "$silent_mode" = "no" && echo " OK!"
+    jirac_log INFO "version: $project_version"
+    jirac_log INFO "SCM URL: $gitlab_base_url"
+    jirac_log INFO "name: $project"
+    echo ""
 fi
 
 
@@ -238,7 +235,7 @@ elif [[ "$print_mode" = "1" ]]; then
     short_hashes=$(echo $short_hashes | tac --separator=" ")
     for hash in $short_hashes; do
         complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
-        echo "* $(jirac_get_git_subject "$project_git_location" $complete_sha1)" >> "$temp_clip"
+        echo "* *$(jirac_get_git_subject "$project_git_location" $complete_sha1)*" >> "$temp_clip"
         echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
         body=$(jirac_get_git_body "$project_git_location" $complete_sha1)
         if [ "$body" != "" ]; then
