@@ -4,12 +4,11 @@
 
 ## Goal
 
-Automate JIRA comment creation.
+Automate JIRA comment creation from Git commits for a Maven project.
 
-It will insert the comment contents right into your clipboard.
+This command line tool will generate a formatted comment for JIRA right into your clipboard.
 
 ## Downloads
-
 
 ### Latest
 
@@ -49,13 +48,19 @@ If you plan to export a graphical editor (such as gedit, Sublime Text etc), you 
 
 Obviously regardless of the editor you use, **escape spaces in its path before exporting it**!
 
-
 ## Execution
 
-`jirac` must be launched from a specific Git/MVN project. Otherwise an informative message will be displayed.
-Once launched, you will have to select the commits you want to display and decide to keep their description, overwrite it OR have no description at all
+`jirac` must be executed from the root directory of a Maven project version controlled with Git. Otherwise an informative message will be displayed.
 
-Then, your commit selection will be formatted as a nice informative comment and inserted into your clipboard.
+After selecting one or more commits, either interractively or with command line arguments, `jirac` will generate a formatted text for JIRA 
+with the following information and copy it to your clipboard:
+* name of the projet
+* current branch
+* current version
+* for each selected commit
+    - title
+    - content
+    - link the commit in the GIT graphical interface of the project (if any)
 
 ## Why `jirac` only shows pushed commits
 
