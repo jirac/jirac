@@ -121,6 +121,6 @@ jirac_two_fingers(){
 }
 
 jirac_echo() {
-    test "$silent_mode" = "no" && echo $1
+    test "$silent_mode" = "no" && echo $*
 }
 
