@@ -67,7 +67,7 @@ jirac_help() {
 }
 
 jirac_banner_print() {
-jirac_echo "
+    test "$silent_mode" = "no" && echo "
        _ _____ _____              _          _                 _
       | |_   _|  __ \     /\     | |        | |               | |
       | | | | | |__) |   /  \    | |__   ___| |_ __   ___ _ __| |
@@ -76,7 +76,7 @@ jirac_echo "
   \____/|_____|_|  \_\/_/    \_\ |_| |_|\___|_| .__/ \___|_|  (_)
                                               | |
                                               |_|
-"
+    "
 }
 
 jirac_victorious_print(){
@@ -84,7 +84,7 @@ jirac_victorious_print(){
 }
 
 jirac_two_fingers(){
-    jirac_echo '
+    test "$silent_mode" = "no" && echo '
                             __
                            /  \
                           |    |
