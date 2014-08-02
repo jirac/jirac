@@ -194,8 +194,7 @@ jirac_echo -e "## \033[7mFINAL RESULT...\033[m"
 temp_clip=$(jirac_mktemp)
 
 #TODO: real clean template
-echo "
-*$project*
+echo "*$project*
 * branche   : $branch
 * version   : $project_version" > "$temp_clip"
 if [ "$print_mode" = "0" ]; then
