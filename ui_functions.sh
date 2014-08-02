@@ -35,14 +35,24 @@ jirac_apply_print_mode() {
             print_mode=$1
             ;;
         * )
-        error "Print mode value is invalid"
-        ;;
+            error "Print mode value is invalid"
+            ;;
     esac
+}
+
+##
+# put all options consistency verifications here
+##
+jirac_verify_options() {
+    # when ouput-mode is "o", options --number or --grep must be specified
+    if [[ "$output_mode" = "o" && -z "$number_of_commit" && -z "$regexp" ]]; then
+        error "Option --standard-output requires at least one of option --number or --grep to be set"
+    fi
 }
 
 jirac_help() {
     echo "usage: jirac [-n number_of_commit] [ -p print_mode ] [--help] [--silent] [-grep regexp]"
-    echo "    --number, -n : shortcut to select the n last pushed commits without interactively selecting them"
+    echo "    --number, -n : selects the n last pushed commits without interactively selecting them"
     echo "         parameter must be a positive integer"
     echo "         "
     echo "    --help, -h: Display this help"
@@ -52,7 +62,6 @@ jirac_help() {
     echo "    --grep, -g: shortcut to select commits whose short description match the provided regexp"
     echo "         "
     echo "    --print-mode, -p: select print_mode, supported values are "
-    echo "         "
     echo "         0 : original printing mode of JIRAC"
     echo "             - default print mode, used when option -p is not specified"
     echo "             - commits are listed in most-recent-first order"
@@ -64,6 +73,11 @@ jirac_help() {
     echo "             - each commit get its own first level sublist"
     echo "             - first level item of each commit is the subject of the commit"
     echo "             - second level items of each commit are : the link to the commit, the body of the commit"
+    echo "         "
+    echo "    --standard-output: generated comment is printed to stdout instead of the clipboard"
+    echo "             - useful to pipe jirac generated comment to another command"
+    echo "             - requires at least one of options --number and --grep to be set"
+    echo "             - implicitly enables silence mode (option --silent)"
 }
 
 jirac_banner_print() {

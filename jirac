@@ -30,6 +30,9 @@ umask 077 # Set access file only to the user who launched the script
 # default values
 silent_mode="no" # think that a string tells more than number
 print_mode="0"
+output_mode="c"
+number_of_commit=""
+regexp=""
 
 while [ $# -gt 0 ]
 do
@@ -38,6 +41,11 @@ do
                 test -z "$2" && error "Number of commits requires an argument!"
                 test 0 -gt "$2" && error "Number of commits option must be positive"
                 number_of_commit=$2
+                shift
+                ;;
+            --standard-output )
+                output_mode="o"
+                silent_mode="yes" # implicitly enables silent mode
                 shift
                 ;;
             --print-mode | -print-mode | --p | -p )
@@ -65,6 +73,8 @@ do
         esac
         shift
     done
+
+jirac_verify_options
 
 jirac_banner_print
 jirac_echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
@@ -244,6 +254,10 @@ elif [[ "$print_mode" = "1" ]]; then
     done
 fi
 
-jirac_copy_to_clipboard "$temp_clip"
+if [ "$output_mode" = "c" ]; then
+    jirac_copy_to_clipboard "$temp_clip"
+elif [ "$output_mode" = "o" ]; then
+    cat "$temp_clip"
+fi
 
 jirac_victorious_print
