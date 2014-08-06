@@ -186,14 +186,18 @@ echo "*$project*
 * version   : $project_version" > "$temp_clip"
 # reverse list of commits to print them oldest first
 short_hashes=$(echo $short_hashes | reverse_commits)
+jirac_log INFO "Selected commits:"
 for hash in $short_hashes; do
     complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
-    echo "* *$(jirac_get_git_subject "$project_git_location" $complete_sha1)*" >> "$temp_clip"
+    subject=$(jirac_get_git_subject "$project_git_location" $complete_sha1)
+    echo "* *$subject*" >> "$temp_clip"
     echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
     body=$(jirac_get_git_body "$project_git_location" $complete_sha1)
     if [ "$body" != "" ]; then
         echo -e "** ${body}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
     fi
+
+    jirac_log INFO " - $hash $subject"
 done
 
 if [ "$output_mode" = "c" ]; then
