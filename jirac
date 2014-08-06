@@ -218,22 +218,8 @@ if [ "$print_mode" = "0" ]; then
 
         # compute description
         msg=$(jirac_get_git_full_message "$project_git_location" $hash)"\n"
-        default_description="${default_description}$msg"
+        description="${description}$msg"
     done
-
-    # description override
-    read -p "## Override description (y/n/skip)? " -n 1 -r
-    echo ""
-    if [[ $REPLY == "Y" || $REPLY == "y" ]]; then
-        while [ -z "$description" ]; do
-            echo -ne "\t... which is? "
-            read description
-        done
-    elif [[ $REPLY == "S" || $REPLY == "s" ]]; then
-        description=''
-    else
-        description=$default_description
-    fi
 
     # append description
     if [ -n "${description}" ]; then
