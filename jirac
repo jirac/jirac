@@ -28,60 +28,61 @@ source "$jirac_dir"/ui_functions.sh
 umask 077 # Set access file only to the user who launched the script
 
 # default values
-silent_mode="no" # think that a string tells more than number
+log_level=1 # 0 = ERROR, 1 = INFO, 2 = DEBUG, -1 = silent mode
 print_mode="0"
 output_mode="c"
 number_of_commit=""
 regexp=""
 
-while [ $# -gt 0 ]
-do
-        case $1 in
-            --number | -number | --n | -n )
-                test -z "$2" && error "Number of commits requires an argument!"
-                test 0 -gt "$2" && error "Number of commits option must be positive"
-                number_of_commit=$2
-                shift
-                ;;
-            --standard-output )
-                output_mode="o"
-                silent_mode="yes" # implicitly enables silent mode
-                ;;
-            --print-mode | -print-mode | --p | -p )
-                test -z $2 && error "Print mode requires an argument!"
-                jirac_apply_print_mode $2
-                shift
-                ;;
-            --silent | -silent | --s | -s )
-                silent_mode="yes"
-                ;;
-            --grep | -grep | --g | -g )
-                regexp=$2
-                test -z $regexp && error "grep option requires a regexp."
-                shift
-                ;;
-            --help | -help | --h | -h | --? | -? )
-                usage_and_exit
-                ;;
-            -* )
-                error "Unreconized option: $1"
-                ;;
-            * )
-                break
-                ;;
-        esac
-        shift
-    done
-
+while [ $# -gt 0 ]; do
+    case $1 in
+        --number | -number | --n | -n )
+            test -z "$2" && usage_and_exit "Number of commits option requires an argument!"
+            test 0 -gt "$2" && usage_and_exit "Number of commits value must be positive"
+            number_of_commit=$2
+            shift
+            ;;
+         --standard-output )
+            output_mode="o"
+            silent_mode="yes" # implicitly enables silent mode
+            ;;
+        --print-mode | -print-mode | --p | -p )
+            test -z $2 && usage_and_exit "Print mode option requires an argument!"
+            jirac_apply_print_mode $2
+            shift
+            ;;
+        --silent | -silent | --s | -s )
+            log_level=-1
+            ;;
+        --log-level | -log-level | --l | -l )
+            test -z $2 && usage_and_exit "Log level option requires an argument!"
+            jirac_apply_log_level $2
+            shift
+            ;;
+        --grep | -grep | --g | -g )
+            regexp=$2
+            test -z $regexp && usage_and_exit "grep option requires a regexp."
+            shift
+            ;;
+        --help | -help | --h | -h | --? | -? )
+            usage_and_exit
+            ;;
+        -* )
+            usage_and_exit "Unreconized option: $1"
+            ;;
+        * )
+            break
+            ;;
+    esac
+    shift
+done
 jirac_verify_options
 
-jirac_banner_print
-jirac_echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
-
+jirac_log DEBUG "DEPENDENCY CHECK..."
 if [[ $OSTYPE == darwin* ]]; then
     jirac_check_dependency pbcopy
     jirac_check_dependency gtac
-elif [[ $OSTYPE == msys ]]; then
+elif [ $OSTYPE == msys ]; then
     jirac_check_dependency clip
     jirac_check_dependency mktemp
     jirac_check_dependency tac
@@ -95,18 +96,10 @@ do
 	jirac_check_dependency $dependency
 done
 
-jirac_echo ""
-jirac_echo ""
-jirac_echo -ne "# \033[7mCONFIGURATION CHECK...\033[m "
-
+jirac_log DEBUG "CONFIGURATION CHECK..."
 create_editor_variable
 
-jirac_echo " OK!"
-jirac_echo ""
-jirac_echo -e "# \033[7mQUESTION TIME!\033[m"
-
 # project folder
-
 root_dir=$(jirac_get_git_project_root_directory)
 
 if [[ -d $root_dir && -f "${root_dir}/pom.xml" ]]; then
@@ -117,26 +110,20 @@ if [[ -d $root_dir && -f "${root_dir}/pom.xml" ]]; then
 else
     jirac_log INFO "To run jirac please move inside your maven project on which you want to comment a commit."
 fi
+jirac_log DEBUG " project root directory: $project_path"
+jirac_log DEBUG " project pom.xml: $project_pom"
+jirac_log DEBUG " project Git directory location: $project_git_location"
 
 # sanity checks
 if [ ! -f  "$project_pom" ]; then
-	jirac_log ERROR "No POM file found in the project directory. Aborting."
-	exit 1
+	message_and_exit "No POM file found in the project directory. Aborting."
 fi
 
 if [ ! -d "$project_git_location" ]; then
-    jirac_log ERROR "The provided directory is not a git repository. Aborting."
-    exit 1
+    message_and_exit "The provided directory is not a git repository. Aborting."
 fi
 
-jirac_log INFO "Project root directory: $project_path"
-jirac_echo ""
-
-
-# version
-
-jirac_echo "## Grabbing Maven name, artifact version and SCM URL... "
-
+jirac_log DEBUG " parsing POM... "
 project=$(jirac_get_maven_project_name "$project_pom")
 project_version=$(jirac_get_maven_version "$project_pom")
 gitlab_base_url=$(jirac_get_scm_url "$project_pom")
@@ -147,23 +134,18 @@ fi
 
 if [ -z "$project_version" ]; then
     jirac_log ERROR "Either you don't follow a semantic versioning scheme or this is not a Maven project. Aborting."
-    model_error "no version found!"
-
+    message_and_exit "no version found!"
 elif [ -z "$project" ]; then
     jirac_log ERROR "Please check <name> is present in your POM"
-    model_error "no project name found!"
-
+    message_and_exit "no project name found!"
 elif [ -z "$gitlab_base_url" ]; then
     jirac_log ERROR "Please make a section <scm><connection> is present in your POM"
-    model_error "no SCM URL found!"
+    message_and_exit "no SCM URL found!"
 else
-    jirac_echo " OK!"
     jirac_log INFO "version: $project_version"
     jirac_log INFO "SCM URL: $gitlab_base_url"
     jirac_log INFO "name: $project"
-    jirac_echo ""
 fi
-
 
 # branch
 while [ -z "$branch" ]; do
@@ -171,24 +153,30 @@ while [ -z "$branch" ]; do
     jirac_select Branch "git branch -r" $project_git_location
     branch=$answer
 done
+jirac_log INFO "branch: $branch"
 
 # commits
 author=$(git config user.name)
 
-if [ -z "$(git log -1 --committer="${author}" $branch)" ];then
-    error "You have no pushed commit on this project. Only author of commit can generate comments."
+if [ -z "$(git log -1 --committer="${author}" $branch)" ]; then
+    message_and_exit "You have no pushed commit on this project. Only author of commit can generate comments."
 fi
 
+jirac_log DEBUG "Selecting commit(s)..."
 # Using the option -n (number of commit), -g (grep). If either one or both are specified, no need to manually select commits.
-if [ -n "$number_of_commit" ] && [ -n "$regexp" ];then
+if [[ -n "$number_of_commit" && -n "$regexp" ]]; then
+    jirac_log DEBUG " selecting by applying grep $regexp on $number_of_commit last commit(s) of ${author}"
     short_hashes=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --grep "$regexp" --committer="${author}" --format=%h $branch)
-elif [ -n "$number_of_commit" ];then
+    test -z "$short_hashes" && message_and_exit "None of the $number_of_commit last commit(s) matched the regexp: $regexp"
+elif [ -n "$number_of_commit" ]; then
+    jirac_log DEBUG " selecting $number_of_commit last commit(s) of ${author}"
     short_hashes=$(git --git-dir="${project_git_location}" log -"$number_of_commit" --committer="${author}" --format=%h $branch)
-elif [ -n "$regexp" ];then
+elif [ -n "$regexp" ]; then
+    jirac_log DEBUG " selecting by applying grep $regexp on commit(s) of ${author}"
     short_hashes=$(git --git-dir="${project_git_location}" log --committer="${author}" --grep "$regexp"  --format=%h $branch)
-    [ -z "$short_hashes" ] && echo No commit matching the regexp: "$regexp" && exit 1
+    test -z "$short_hashes" && message_and_exit "No commit matching the regexp: $regexp"
 else
-    jirac_echo -e "## Which commit \033[1mSHA1s\033[m?"
+    jirac_log DEBUG " display editor to select commit(s)"
     until [ -n "$short_hashes" ]; do
         temp_file=$(jirac_mktemp)
 
@@ -199,13 +187,10 @@ else
     done
 fi
 
-jirac_echo ""
-jirac_echo -e "## \033[7mFINAL RESULT...\033[m"
-
+jirac_log DEBUG "Building comment..."
 
 temp_clip=$(jirac_mktemp)
 
-#TODO: real clean template
 echo "*$project*
 * branche   : $branch
 * version   : $project_version" > "$temp_clip"
@@ -244,5 +229,3 @@ if [ "$output_mode" = "c" ]; then
 elif [ "$output_mode" = "o" ]; then
     cat "$temp_clip"
 fi
-
-jirac_victorious_print

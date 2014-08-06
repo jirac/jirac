@@ -1,32 +1,17 @@
 #!/bin/bash
 
-error(){
-    echo "$@" >&2
-    usage_and_exit 1
-}
-
-model_error(){
-    echo "$@" >&2
-    exit 1
-}
-
-usage_and_exit(){
-    jirac_help
-    exit $1
-}
-
 jirac_select() {
-	local PS3="${1} ? --> "
-	cd $3
-	select answer in $($2)
-	do
-	    if [[ -n $answer ]]; then
-		cd - 2>&1 > /dev/null
-		break
-	    else
-		echo "Invalid choice"
-	    fi
-	done
+    local PS3="${1} ? --> "
+    cd $3
+    select answer in $($2)
+    do
+        if [ -n $answer ]; then
+            cd - 2>&1 > /dev/null
+            break
+        else
+            message_and_exit "Invalid choice"
+        fi
+    done
 }
 
 jirac_apply_print_mode() {
@@ -35,7 +20,7 @@ jirac_apply_print_mode() {
             print_mode=$1
             ;;
         * )
-            error "Print mode value is invalid"
+            message_and_exit "Print mode value is invalid"
             ;;
     esac
 }
@@ -46,18 +31,34 @@ jirac_apply_print_mode() {
 jirac_verify_options() {
     # when ouput-mode is "o", options --number or --grep must be specified
     if [[ "$output_mode" = "o" && -z "$number_of_commit" && -z "$regexp" ]]; then
-        error "Option --standard-output requires at least one of option --number or --grep to be set"
+        message_and_exit "Option --standard-output requires at least one of option --number or --grep to be set"
     fi
 }
 
+jirac_apply_log_level() {
+    case $1 in
+        "0" | "1" | "2" | 0 | 1 | 2 )
+            log_level=$1
+            ;;
+        * )
+        message_and_exit "Log level value is invalid"
+        ;;
+    esac
+}
+
 jirac_help() {
-    echo "usage: jirac [-n number_of_commit] [ -p print_mode ] [--help] [--silent] [-grep regexp]"
-    echo "    --number, -n : selects the n last pushed commits without interactively selecting them"
+    echo "usage: jirac [-n number_of_commit] [ -p print_mode ] [--help] [--silent] [-grep regexp] [-l 0/1/2] [--standard-output]"
+    echo "    --number, -n : shortcut to select the n last pushed commits without interactively selecting them"
     echo "         parameter must be a positive integer"
     echo "         "
     echo "    --help, -h: Display this help"
     echo "         "
-    echo "    --silent, -s: Run jirac on silent mode. I.e no more fancy helper prints"
+    echo "    --silent, -s: Run jirac on silent mode, ie. no log to the console at all"
+    echo "         "
+    echo "    --log-level, -l: Sets the level of details of JIRAC logs to the console"
+    echo "         0 : only error logs"
+    echo "         1 : error and info logs"
+    echo "         2 : error, info and debug logs"
     echo "         "
     echo "    --grep, -g: shortcut to select commits whose short description match the provided regexp"
     echo "         "
@@ -79,62 +80,3 @@ jirac_help() {
     echo "             - requires at least one of options --number and --grep to be set"
     echo "             - implicitly enables silence mode (option --silent)"
 }
-
-jirac_banner_print() {
-    test "$silent_mode" = "no" && echo "
-       _ _____ _____              _          _                 _
-      | |_   _|  __ \     /\     | |        | |               | |
-      | | | | | |__) |   /  \    | |__   ___| |_ __   ___ _ __| |
-  _   | | | | |  _  /   / /\ \   | '_ \ / _ \ | '_ \ / _ \ '__| |
- | |__| |_| |_| | \ \  / ____ \  | | | |  __/ | |_) |  __/ |  |_|
-  \____/|_____|_|  \_\/_/    \_\ |_| |_|\___|_| .__/ \___|_|  (_)
-                                              | |
-                                              |_|
-    "
-}
-
-jirac_victorious_print(){
-    jirac_two_fingers
-}
-
-jirac_two_fingers(){
-    test "$silent_mode" = "no" && echo '
-                            __
-                           /  \
-                          |    |
-            _             |    |
-          /" |            | _  |
-         |   |            |    |
-         | _ |            |    |
-         |   |            |    |
-         |   |        __  | _  |
-         | _ |  __   /  \ |    |
-         |   | /  \ |    ||    |
-         |   ||    ||    ||    |       _---.
-         |   ||    ||    |. __ |     ./     |
-         | _. | -- || -- |    `|    /      //
-         |"   |    ||    |     |   /`     (/
-         |    |    ||    |     | ./       /
-         |    |.--.||.--.|  __ |/       .|
-         |  __|    ||    |-"            /
-         |-"   \__/  \__/             .|
-         |       _.-"                 /
-         |   _.-"      /             |
-         |            /             /
-         |           |             /
-         `           |            /
-          \          |          /"
-           |          `        /
-            \                ."
-            |                |
-            |                |
-            |                |
-            |                |
-    '
-    jirac_echo "Paste it now \o/"
-}
-
-jirac_echo() {
-    test "$silent_mode" = "no" && echo $*
-}
-
