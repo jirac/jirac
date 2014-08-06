@@ -1,7 +1,7 @@
 #!/bin/bash
 
 xml_parser() {
-	if [[ $OSTYPE == msys ]]; then
+	if [ $OSTYPE == msys ]; then
 		echo "xml"
 	else
 		echo "xmlstarlet"

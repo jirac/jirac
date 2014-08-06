@@ -91,9 +91,8 @@ else
     jirac_check_dependency tac
 fi
 
-for dependency in git sed xml_parser
-do
-	jirac_check_dependency $dependency
+for dependency in git sed xml_parser; do
+    jirac_check_dependency $dependency
 done
 
 jirac_log DEBUG "CONFIGURATION CHECK..."
@@ -108,7 +107,7 @@ if [[ -d $root_dir && -f "${root_dir}/pom.xml" ]]; then
 	project_git_location="$root_dir/.git"
 	branch=$(jirac_get_git_current_remote_branch)
 else
-    jirac_log INFO "To run jirac please move inside your maven project on which you want to comment a commit."
+    message_and_exit "To run jirac please move inside your maven project on which you want to comment a commit."
 fi
 jirac_log DEBUG " project root directory: $project_path"
 jirac_log DEBUG " project pom.xml: $project_pom"
@@ -127,8 +126,7 @@ jirac_log DEBUG " parsing POM... "
 project=$(jirac_get_maven_project_name "$project_pom")
 project_version=$(jirac_get_maven_version "$project_pom")
 gitlab_base_url=$(jirac_get_scm_url "$project_pom")
-if [ -z "$gitlab_base_url" ]
-then
+if [ -z "$gitlab_base_url" ]; then
     gitlab_base_url=$(jirac_get_connection_url "$project_pom")
 fi
 
@@ -210,7 +208,8 @@ if [ "$print_mode" = "0" ]; then
         echo -e "* Description:" >> "$temp_clip"
         echo -e "${description}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
     fi
-elif [[ "$print_mode" = "1" ]]; then
+elif [ "$print_mode" = "1" ]; then
+    # reverse list of commits to print them oldest first
     short_hashes=$(echo $short_hashes | reverse_commits)
     for hash in $short_hashes; do
         complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)

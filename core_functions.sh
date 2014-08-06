@@ -27,13 +27,13 @@ jirac_log() {
 }
 
 jirac_copy_to_clipboard() {
-        if [[ $OSTYPE == darwin* ]]; then
-                pbcopy < $1
-        elif [[ $OSTYPE == msys ]]; then
-                clip < $1
-        else
-                xclip -sel clip < $1
-        fi
+    if [ $OSTYPE == darwin* ]; then
+        pbcopy < $1
+    elif [ $OSTYPE == msys ]; then
+        clip < $1
+    else
+        xclip -sel clip < $1
+    fi
 }
 
 create_editor_variable(){
