@@ -46,8 +46,3 @@ jirac_get_scm_url() {
 	cmd=`xml_parser`
 	echo $(node_text "/ns:project/ns:scm/ns:url" "$1")
 }
-
-jirac_get_connection_url() {
-	cmd=`xml_parser`
-	echo $(node_text "/ns:project/ns:scm/ns:connection" "$1" | cut -d':' -f3- | sed 's/\.git//')
-}
