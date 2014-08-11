@@ -27,7 +27,7 @@ jirac_log() {
 }
 
 jirac_copy_to_clipboard() {
-    if [ $OSTYPE == darwin* ]; then
+    if [[ $OSTYPE == darwin* ]]; then
         pbcopy < $1
     elif [ $OSTYPE == msys ]; then
         clip < $1
