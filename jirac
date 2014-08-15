@@ -71,11 +71,14 @@ jirac_echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
 
 if [[ $OSTYPE == darwin* ]]; then
     jirac_check_dependency pbcopy
+    jirac_check_dependency gtac
 elif [[ $OSTYPE == msys ]]; then
     jirac_check_dependency clip
     jirac_check_dependency mktemp
+    jirac_check_dependency tac
 else
     jirac_check_dependency xclip
+    jirac_check_dependency tac
 fi
 
 for dependency in git sed xml_parser
@@ -228,8 +231,7 @@ if [ "$print_mode" = "0" ]; then
         echo -e "${description}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
     fi
 elif [[ "$print_mode" = "1" ]]; then
-    # reverse list of commits to print them oldest first
-    short_hashes=$(echo $short_hashes | tac --separator=" ")
+    short_hashes=$(echo $short_hashes | reverse_commits)
     for hash in $short_hashes; do
         complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
         echo "* *$(jirac_get_git_subject "$project_git_location" $complete_sha1)*" >> "$temp_clip"
