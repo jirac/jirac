@@ -71,11 +71,14 @@ jirac_echo -ne "# \033[7mDEPENDENCY CHECK...\033[m "
 
 if [[ $OSTYPE == darwin* ]]; then
     jirac_check_dependency pbcopy
+    jirac_check_dependency gtac
 elif [[ $OSTYPE == msys ]]; then
     jirac_check_dependency clip
     jirac_check_dependency mktemp
+    jirac_check_dependency tac
 else
     jirac_check_dependency xclip
+    jirac_check_dependency tac
 fi
 
 for dependency in git sed xml_parser
