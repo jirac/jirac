@@ -228,8 +228,7 @@ if [ "$print_mode" = "0" ]; then
         echo -e "${description}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
     fi
 elif [[ "$print_mode" = "1" ]]; then
-    # reverse list of commits to print them oldest first
-    short_hashes=$(echo $short_hashes | tac --separator=" ")
+    short_hashes=$(echo $short_hashes | reverse_commits)
     for hash in $short_hashes; do
         complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
         echo "* *$(jirac_get_git_subject "$project_git_location" $complete_sha1)*" >> "$temp_clip"

@@ -49,3 +49,11 @@ create_editor_variable(){
         exit 1
     fi
 }
+
+reverse_commits() {
+    if [[ $OSTYPE == darwin* ]]; then
+        gtac --separator=" "
+    else
+        tac --separator=" "
+    fi
+}
