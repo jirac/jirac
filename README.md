@@ -81,5 +81,6 @@ See [this](http://ihommani.gitbooks.io/jirac-guide/) doc.
 :fearful:
 
 Create a [Github issue](https://github.com/jirac/jirac/issues) if needed with as much as details as you can.
+Or conect to the [Gitter-chat](https://gitter.im/jirac/jirac#) for discussion and support.
 
 
