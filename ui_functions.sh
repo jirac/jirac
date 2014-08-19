@@ -78,5 +78,5 @@ jirac_help() {
     echo "    --standard-output: generated comment is printed to stdout instead of the clipboard"
     echo "             - useful to pipe jirac generated comment to another command"
     echo "             - requires at least one of options --number and --grep to be set"
-    echo "             - implicitly enables silence mode (option --silent)"
+    echo "             - implicitly changes log level to 0 (only error logs)"
 }

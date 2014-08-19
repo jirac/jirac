@@ -44,7 +44,7 @@ while [ $# -gt 0 ]; do
             ;;
          --standard-output )
             output_mode="o"
-            silent_mode="yes" # implicitly enables silent mode
+            log_level=0 # implicitly change log level to ERROR
             ;;
         --print-mode | -print-mode | --p | -p )
             test -z $2 && usage_and_exit "Print mode option requires an argument!"
