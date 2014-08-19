@@ -46,7 +46,6 @@ do
             --standard-output )
                 output_mode="o"
                 silent_mode="yes" # implicitly enables silent mode
-                shift
                 ;;
             --print-mode | -print-mode | --p | -p )
                 test -z $2 && error "Print mode requires an argument!"
