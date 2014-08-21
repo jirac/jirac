@@ -135,6 +135,9 @@ else
 fi
 
 # branch
+if [[ "$output_mode" = "o" && -z "$branch" ]]; then
+    message_and_exit "Your branch must have an upstream set in order to use option --standard-output"
+fi
 while [ -z "$branch" ]; do
     jirac_log INFO "Your branch has no upstream set, please choose another one:"
     jirac_select Branch "git branch -r" $project_git_location
