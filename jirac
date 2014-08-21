@@ -217,8 +217,7 @@ elif [ "$print_mode" = "1" ]; then
         echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
         body=$(jirac_get_git_body "$project_git_location" $complete_sha1)
         if [ "$body" != "" ]; then
-            echo -e "** " >> "$temp_clip"
-            echo -e "${body}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
+            echo -e "** ${body}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
         fi
     done
 fi
