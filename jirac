@@ -64,10 +64,10 @@ while [ $# -gt 0 ]; do
             test -z $regexp && usage_and_exit "grep option requires a regexp."
             shift
             ;;
-        --help | -help | --h | -h | --? | -? )
+        --help | -help | --h | -h )
             usage_and_exit
             ;;
-        -* )
+        --? | -? | -* )
             usage_and_exit "Unreconized option: $1"
             ;;
         * )
