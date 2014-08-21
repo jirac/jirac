@@ -54,12 +54,12 @@ reverse_commits() {
 }
 
 usage_and_exit(){
-    test -n "$@" && jirac_log ERROR "$@"
+    test -n "$1" && jirac_log ERROR "$1"
     jirac_help
     exit 1
 }
 
 message_and_exit(){
-    test -n "$@" && jirac_log ERROR "$@"
+    test -n "$1" && jirac_log ERROR "$1"
     exit 1
 }
