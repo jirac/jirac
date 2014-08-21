@@ -7,10 +7,9 @@
 # balise. It allows jirac to generate link to the source repository.
 # The output is a message you can paste in jira
 #
-# Usage: jirac [--help|-h] [--number|-n number_of_commits] [--print-mode|-p mode] [--silent|-s] [--grep|-g pattern]
+# Usage: jirac [--help|-h] [--number|-n number_of_commits] [--silent|-s] [--grep|-g pattern]
 # With the --number option, you specify you want the n last pushed commit in your comment
 # With the --silent option, log print are disabled
-# With the --print-mode, you specify the order of the commit in the message.
 # With the --grep, you specify a pattern match commits. If none match, the programm exits
 # 0: Most recent first
 # 1: oldest first
@@ -29,7 +28,6 @@ umask 077 # Set access file only to the user who launched the script
 
 # default values
 log_level=1 # 0 = ERROR, 1 = INFO, 2 = DEBUG, -1 = silent mode
-print_mode="0"
 output_mode="c"
 number_of_commit=""
 regexp=""
@@ -45,11 +43,6 @@ while [ $# -gt 0 ]; do
          --standard-output )
             output_mode="o"
             log_level=0 # implicitly change log level to ERROR
-            ;;
-        --print-mode | -print-mode | --p | -p )
-            test -z $2 && usage_and_exit "Print mode option requires an argument!"
-            jirac_apply_print_mode $2
-            shift
             ;;
         --silent | -silent | --s | -s )
             log_level=-1
@@ -192,36 +185,18 @@ temp_clip=$(jirac_mktemp)
 echo "*$project*
 * branche   : $branch
 * version   : $project_version" > "$temp_clip"
-if [ "$print_mode" = "0" ]; then
-    echo "* commit(s) :" >> "$temp_clip"
-    for hash in $short_hashes; do
-        complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
-        echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
-
-        # compute description
-        msg=$(jirac_get_git_full_message "$project_git_location" $hash)"\n"
-        description="${description}$msg"
-    done
-
-    # append description
-    if [ -n "${description}" ]; then
-        echo -e "* Description:" >> "$temp_clip"
-        echo -e "${description}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
+# reverse list of commits to print them oldest first
+short_hashes=$(echo $short_hashes | reverse_commits)
+for hash in $short_hashes; do
+    complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
+    echo "* *$(jirac_get_git_subject "$project_git_location" $complete_sha1)*" >> "$temp_clip"
+    echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
+    body=$(jirac_get_git_body "$project_git_location" $complete_sha1)
+    if [ "$body" != "" ]; then
+        echo -e "** " >> "$temp_clip"
+        echo -e "${body}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
     fi
-elif [ "$print_mode" = "1" ]; then
-    # reverse list of commits to print them oldest first
-    short_hashes=$(echo $short_hashes | reverse_commits)
-    for hash in $short_hashes; do
-        complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
-        echo "* *$(jirac_get_git_subject "$project_git_location" $complete_sha1)*" >> "$temp_clip"
-        echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
-        body=$(jirac_get_git_body "$project_git_location" $complete_sha1)
-        if [ "$body" != "" ]; then
-            echo -e "** " >> "$temp_clip"
-            echo -e "${body}" | awk -f "$jirac_dir"/preserve_paragraphs.awk >> "$temp_clip"
-        fi
-    done
-fi
+done
 
 if [ "$output_mode" = "c" ]; then
     jirac_copy_to_clipboard "$temp_clip"
