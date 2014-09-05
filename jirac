@@ -140,8 +140,7 @@ if [[ "$output_mode" = "o" && -z "$branch" ]]; then
 fi
 while [ -z "$branch" ]; do
     jirac_log INFO "Your branch has no upstream set, please choose another one:"
-    jirac_select Branch "git branch -r" $project_git_location
-    branch=$answer
+    branch=$(jirac_select Branch "git branch -r" $project_git_location)
 done
 jirac_log INFO "branch: $branch"
 

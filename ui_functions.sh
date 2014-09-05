@@ -2,16 +2,15 @@
 
 jirac_select() {
     local PS3="${1} ? --> "
-    cd $3
-    select answer in $($2)
-    do
-        if [ -n $answer ]; then
-            cd - 2>&1 > /dev/null
-            break
-        else
-            message_and_exit "Invalid choice"
-        fi
-    done
+    (cd $3
+    select answer in $(eval "$2"); do
+    if [ -n "$answer" ]; then
+        echo $answer
+    exit
+    else
+        message_and_exit "Invalid choice"
+    fi
+    done)
 }
 
 ##
