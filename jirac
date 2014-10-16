@@ -16,7 +16,7 @@
 #
 # More information can be find at the following url: http://ihommani.gitbooks.io/jirac-guide/
 #
-# This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+# This work is licensed under The MIT License (MIT).
 
 shopt -u sourcepath
 jirac_dir=$(dirname "$0")
