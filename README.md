@@ -61,10 +61,23 @@ git clone ;-)
 
 ### Mac users
 
-Make sure to install:
+1. brew tap the `jirac` repository
 
- * `pbcopy`
+    ```sh
+    brew tap jirac/jirac
+    ```
 
+2. install `jirac` formula
+
+    ```sh
+    brew install --HEAD jirac
+    ```
+
+3. upgrade `jirac` to latest version
+
+    ```sh
+    brew reinstall --HEAD jirac
+    ```
 
 ### Quick note on editor export
 
