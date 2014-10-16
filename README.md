@@ -6,7 +6,9 @@
 
 Automate JIRA comment creation from Git commits for a Maven project.
 
-This command line tool will generate a formatted comment for JIRA right into your clipboard.
+This command line tool will generate a formatted comment for JIRA right into your clipboard that you can then paste into a JIRA comment and get a result such as the following:
+
+![JIRA comment screenshot](resources/jira_comment_sample_screenshot.png)
 
 ## Downloads
 
@@ -14,26 +16,48 @@ This command line tool will generate a formatted comment for JIRA right into you
 
 git clone ;-)
 
-## Common setup
+## Installation
 
-Make to sure to:
+### Linux
 
- 1. install Git (with Git Bash on Windows) 
- 1. install XMLStarlet with this [link](http://xmlstar.sourceforge.net/download.php) or via your package manager
- 1. clone this repo ;) and include the clone directory in `PATH`
- 1. define environment variable `VISUAL` or `EDITOR` (e.g.: "vim")
+1. install Git and other dependencies
 
-### Linux users
+    ```sh
+    sudo apt-get update
+    sudo apt-get install git xmlstarlet xclip
+    ```
 
-Make sure to install 
+2. clone the repo on your disk, for example in your home directory
 
- * `xclip` package
+    ```sh
+    git clone https://github.com/jirac/jirac.git ~/jirac
+    ```
 
-### Windows users
+3. add `jirac` directory to your `PATH`, for example by adding a line to your `.bashrc`
 
-Make sure to install:
+    ```sh
+    echo "export PATH=~/jirac:$PATH" >> ~/.bashrc
+    ```
 
- * [mktemp](http://gnuwin32.sourceforge.net/packages/mktemp.htm) and include its `bin` folder in `PATH`
+4. make sure the environement variable `VISUAL` or `EDITOR` is set.
+
+    ```sh
+    # test with the following command
+    echo "if this [$VISUAL$EDITOR] is empty, you must set either property VISUAL or EDITOR"
+    # add vim as your editor in your .bashrc with the following command
+    echo "export EDITOR=vim" >> ~/.bashrc
+    ```
+
+5. you are done
+
+### Windows
+
+1. install [Git Bash](http://msysgit.github.io/)
+2. install [mktemp](http://gnuwin32.sourceforge.net/packages/mktemp.htm) and include its `bin` folder in `PATH`
+3. install [XMLStarlet](http://xmlstar.sourceforge.net/download.php)
+4. clone this repo ;) and include the clone directory in `PATH`
+5. define environment variable `VISUAL` or `EDITOR` (e.g.: "vim")
+6. done
 
 ### Mac users
 
@@ -52,34 +76,30 @@ Obviously regardless of the editor you use, **escape spaces in its path before e
 
 `jirac` may be executed from the any directory of a Maven project version controlled with Git. Otherwise an informative message will be displayed.
 
-After selecting one or more commits, either interractively or with command line arguments, `jirac` will generate a formatted text for JIRA 
+After selecting one or more commits, either interactively or with command line arguments, `jirac` will generate a formatted text for JIRA 
 with the following information and copy it to your clipboard:
 * name of the projet
 * current branch
 * current version
-* for each selected commit
-    - title
-    - content
-    - link the commit in the GIT graphical interface of the project (if any)
+[for each selected commit]
+* commit subject
+    * link the commit in the GIT graphical interface of the project (if any)
+    * content
 
 ## Why `jirac` only shows pushed commits
 
-If some other new commits were pushed while you were working, you would have to pull those changes before pushing.
-The problem occurs when rebase is enabled by default. What will happen then?
+`jirac` generates a link to the GIT graphical interface of the project (if any).
 
-Well, as Git *NEVER* changes any commits, rebase will clone your commits, append them to the pulled changes and *assign them new IDs*!
-Therefore, the early-generated commits' URLs are likely to be wrong as it will include old IDs (the ones before rebase).
+Such URL is based on the id of the commit which can not be assumed to be definitive unless the commit has been pushed and shared with other.
 
-To remain on the safe side, `jirac` therefore enforces *pushed* commit selection.
+Therefore, to remain on the safe side, `jirac` enforces *pushed* commit selection.
 
-## Manual
+## Detailed documentation
 
-See [this](http://ihommani.gitbooks.io/jirac-guide/) doc.
+See [the jirac online guide](http://ihommani.gitbooks.io/jirac-guide).
 
 ## Troubleshooting
 
 :fearful:
 
 Create a [Github issue](https://github.com/jirac/jirac/issues) if needed with as much as details as you can.
-
-
