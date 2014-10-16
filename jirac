@@ -189,7 +189,7 @@ jirac_log INFO "Selected commits:"
 for hash in $short_hashes; do
     complete_sha1=$(git --git-dir="$project_git_location" log --format="%H" $hash -1)
     subject=$(jirac_get_git_subject "$project_git_location" $complete_sha1)
-    echo "* *$subject*" >> "$temp_clip"
+    echo "* *`jira_escape_bolded_string "$subject"`*" >> "$temp_clip"
     echo "** $gitlab_base_url/commit/$complete_sha1" >> "$temp_clip"
     body=$(jirac_get_git_body "$project_git_location" $complete_sha1)
     if [ "$body" != "" ]; then

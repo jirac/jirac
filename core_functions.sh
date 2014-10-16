@@ -63,3 +63,7 @@ message_and_exit(){
     test -n "$1" && jirac_log ERROR "$1"
     exit 1
 }
+
+jira_escape_bolded_string() {
+    echo "$1" | awk '{ gsub(/\*/,"\\*"); print }'
+}
