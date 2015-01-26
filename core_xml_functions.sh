@@ -26,7 +26,14 @@ node_text() {
 
 jirac_get_maven_version() {
 	cmd=`xml_parser`
-	echo $(node_text "/ns:project/ns:version" "$1")
+	version=$(node_text "/ns:project/ns:version" "$1")
+
+	#Use parent version if no version can be found
+	if [ -z "$version" ]; then
+		echo $(node_text "/ns:project/ns:parent/ns:version" "$1") "(from parent)"
+	else
+		echo "$version"
+	fi
 }
 
 ##
