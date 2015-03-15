@@ -117,7 +117,7 @@ fi
 
 jirac_log DEBUG " parsing POM... "
 project=$(jirac_get_maven_project_name "$project_pom")
-project_version=$(jirac_get_maven_version "$project_pom")
+project_version=$(jirac_get_maven_project_version "$project_pom")
 gitlab_base_url=$(jirac_get_scm_url "$project_pom")
 
 if [ -z "$project_version" ]; then
@@ -129,7 +129,11 @@ elif [ -z "$project" ]; then
 elif [ -z "$gitlab_base_url" ]; then
     jirac_log DEBUG "No <scm>.<url> section found in the current POM. No link will be generated."
 else
-    jirac_log INFO "version: $project_version"
+    if jirac_is_maven_project_version_from_parent "$project_pom"; then
+        jirac_log INFO "version (from parent artifact): $project_version"
+    else
+        jirac_log INFO "version: $project_version"
+    fi
     jirac_log INFO "SCM URL: $gitlab_base_url"
     jirac_log INFO "name: $project"
 fi
